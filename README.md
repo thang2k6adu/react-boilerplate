@@ -158,6 +158,13 @@ src/
 └── test/            # Test setup files
 ```
 
+## 📚 Documentation
+
+- [Coding Guide](./CODING_GUIDE.md) - Workflow chi tiết để implement feature mới
+- [Quick Start](./QUICKSTART.md) - Hướng dẫn nhanh để bắt đầu
+- [Firebase Setup](./FIREBASE_SETUP.md) - Hướng dẫn setup Firebase
+- [React 19 Upgrade](./UPGRADE_REACT19.md) - Hướng dẫn upgrade lên React 19
+
 ## 🔧 Configuration
 
 ### Environment Variables
