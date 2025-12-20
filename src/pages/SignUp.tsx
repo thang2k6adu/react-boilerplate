@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth } from '@/hooks/useAuth';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { signUpWithFirebaseThunk } from '@/store/thunks/authThunks';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Card from '@/components/Card';
@@ -27,7 +28,11 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 const SignUp: React.FC = () => {
   const { t } = useTranslation();
-  const { signUp, isLoading } = useAuth();
+  const dispatch = useAppDispatch();
+  const { isLoading: authLoading, error: authError } = useAppSelector(
+    state => state.auth
+  );
+  const [firebaseError, setFirebaseError] = useState<string | null>(null);
 
   const {
     register,
@@ -38,11 +43,20 @@ const SignUp: React.FC = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    await signUp({
-      email: data.email,
-      password: data.password,
-      displayName: data.displayName,
-    });
+    setFirebaseError(null);
+    try {
+      const result = await dispatch(
+        signUpWithFirebaseThunk({
+          email: data.email,
+          password: data.password,
+          displayName: data.displayName,
+        })
+      ).unwrap();
+      console.log('Firebase sign up successful:', result);
+    } catch (err) {
+      const errorMessage = typeof err === 'string' ? err : 'Sign up failed';
+      setFirebaseError(errorMessage);
+    }
   };
 
   return (
@@ -54,6 +68,12 @@ const SignUp: React.FC = () => {
       <div className="max-w-md mx-auto">
         <Card title={t('auth.signup')}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {(firebaseError || authError) && (
+              <div className="p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-md text-sm">
+                {firebaseError || authError}
+              </div>
+            )}
+
             <Input
               label="Display Name (Optional)"
               type="text"
@@ -86,7 +106,7 @@ const SignUp: React.FC = () => {
               type="submit"
               variant="primary"
               className="w-full"
-              isLoading={isLoading}
+              isLoading={authLoading}
             >
               {t('auth.signup')}
             </Button>

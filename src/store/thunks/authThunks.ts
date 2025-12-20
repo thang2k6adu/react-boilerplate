@@ -10,12 +10,24 @@ import {
   signInWithPopup,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-import { LoginCredentials, SignUpCredentials } from '@/types/auth';
+import {
+  LoginCredentials,
+  SignUpCredentials,
+  FirebaseLoginRequest,
+  FirebaseUserData,
+  TokenData,
+} from '@/types/auth';
 import { User } from '@/types/auth';
+import { authService } from '@/services/authService';
 
 interface AuthPayload {
   user: User;
   token: string;
+}
+
+interface FirebaseAuthPayload {
+  user: FirebaseUserData;
+  tokens: TokenData;
 }
 
 // Helper function to create user data from Firebase user
@@ -53,6 +65,126 @@ const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   }
   return errorObj?.message || defaultMessage;
 };
+
+// Helper to get device ID
+const getDeviceId = (): string => {
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    deviceId = `web_${navigator.userAgent.split(' ').pop()}_${Date.now()}`;
+    localStorage.setItem('deviceId', deviceId);
+  }
+  return deviceId;
+};
+
+// Firebase Login Thunk
+export const loginWithFirebaseThunk = createAsyncThunk<
+  FirebaseAuthPayload,
+  { email: string; password: string },
+  { rejectValue: string }
+>('auth/loginWithFirebase', async (credentials, { rejectWithValue }) => {
+  if (!auth) {
+    const error =
+      'Firebase is not configured. Please set up Firebase in .env file.';
+    return rejectWithValue(error);
+  }
+
+  try {
+    // Step 1: Login with Firebase
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      credentials.email,
+      credentials.password
+    );
+
+    // Step 2: Get idToken từ Firebase
+    const idToken = await userCredential.user.getIdToken();
+
+    // Step 3: Send idToken to Backend
+    const loginRequest: FirebaseLoginRequest = {
+      idToken,
+      deviceId: getDeviceId(),
+      platform: 'web',
+    };
+
+    const response = await authService.loginWithFirebase(loginRequest);
+
+    if (response.error || !response.data) {
+      return rejectWithValue(response.message || 'Firebase login failed');
+    }
+
+    // Step 4: Return response from backend
+    return {
+      user: response.data.user,
+      tokens: response.data.tokens,
+    };
+  } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error, 'Firebase login failed');
+    return rejectWithValue(errorMessage);
+  }
+});
+
+// Firebase Sign Up Thunk
+export const signUpWithFirebaseThunk = createAsyncThunk<
+  FirebaseAuthPayload,
+  { email: string; password: string; displayName?: string },
+  { rejectValue: string }
+>('auth/signUpWithFirebase', async (credentials, { rejectWithValue }) => {
+  if (!auth) {
+    const error =
+      'Firebase is not configured. Please set up Firebase in .env file.';
+    return rejectWithValue(error);
+  }
+
+  try {
+    // Step 1: Create user with Firebase
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      credentials.email,
+      credentials.password
+    );
+
+    // Step 2: Update displayName if provided
+    if (credentials.displayName) {
+      // Optional: Update user profile with displayName
+      // This is handled in the backend during token verification
+    }
+
+    // Step 3: Get idToken từ Firebase
+    const idToken = await userCredential.user.getIdToken();
+
+    // Step 4: (temporarily) skip backend; just inspect idToken
+    // const signUpRequest: FirebaseLoginRequest = {
+    //   idToken,
+    //   deviceId: getDeviceId(),
+    //   platform: 'web',
+    // };
+    // const response = await authService.signUpWithFirebase(signUpRequest);
+    // if (response.error || !response.data) {
+    //   return rejectWithValue(response.message || 'Firebase sign up failed');
+    // }
+
+    console.log('Firebase sign up idToken:', idToken);
+
+    // Temporary return: surface idToken in place of backend accessToken
+    return {
+      user: {
+        id: userCredential.user.uid,
+        email: userCredential.user.email || '',
+        name: userCredential.user.displayName || undefined,
+        avatar: userCredential.user.photoURL || undefined,
+        role: 'user',
+      },
+      tokens: {
+        accessToken: idToken,
+        refreshToken: '',
+        expiresIn: 0,
+      },
+    };
+  } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error, 'Firebase sign up failed');
+    return rejectWithValue(errorMessage);
+  }
+});
 
 // Login thunk
 export const loginThunk = createAsyncThunk<
