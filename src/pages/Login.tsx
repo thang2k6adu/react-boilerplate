@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginWithFirebaseThunk } from '@/store/thunks/authThunks';
 import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
@@ -20,13 +22,12 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    login,
-    signInWithGoogle,
-    signInWithFacebook,
-    signInWithGitHub,
-    isLoading,
-  } = useAuth();
+  const dispatch = useAppDispatch();
+  const { isLoading: authLoading, error: authError } = useAppSelector(
+    state => state.auth
+  );
+  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  const { signInWithGoogle, signInWithFacebook, signInWithGitHub } = useAuth();
 
   const {
     register,
@@ -37,7 +38,19 @@ const Login: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    await login(data);
+    setFirebaseError(null);
+    try {
+      const result = await dispatch(
+        loginWithFirebaseThunk({
+          email: data.email,
+          password: data.password,
+        })
+      ).unwrap();
+      console.log('Firebase login successful:', result);
+    } catch (err) {
+      const errorMessage = typeof err === 'string' ? err : 'Login failed';
+      setFirebaseError(errorMessage);
+    }
   };
 
   return (
@@ -49,6 +62,12 @@ const Login: React.FC = () => {
       <div className="max-w-md mx-auto">
         <Card title={t('auth.login')}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {(firebaseError || authError) && (
+              <div className="p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-md text-sm">
+                {firebaseError || authError}
+              </div>
+            )}
+
             <Input
               label={t('auth.email')}
               type="email"
@@ -75,7 +94,7 @@ const Login: React.FC = () => {
               type="submit"
               variant="primary"
               className="w-full"
-              isLoading={isLoading}
+              isLoading={authLoading}
             >
               {t('auth.login')}
             </Button>
@@ -99,7 +118,8 @@ const Login: React.FC = () => {
                 variant="outline"
                 className="w-full"
                 onClick={signInWithGoogle}
-                disabled={isLoading}
+                disabled={authLoading}
+                title="Sign in with Google"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -125,7 +145,8 @@ const Login: React.FC = () => {
                 variant="outline"
                 className="w-full"
                 onClick={signInWithFacebook}
-                disabled={isLoading}
+                disabled={authLoading}
+                title="Sign in with Facebook"
               >
                 <svg
                   className="w-5 h-5"
@@ -140,7 +161,8 @@ const Login: React.FC = () => {
                 variant="outline"
                 className="w-full"
                 onClick={signInWithGitHub}
-                disabled={isLoading}
+                disabled={authLoading}
+                title="Sign in with GitHub"
               >
                 <svg
                   className="w-5 h-5"

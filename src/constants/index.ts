@@ -21,5 +21,13 @@ export const API_ENDPOINTS = {
     REFRESH: '/auth/refresh',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
+    FIREBASE_LOGIN: '/auth/firebase/login',
+    FIREBASE_REFRESH: '/auth/refresh',
   },
+} as const;
+
+export const TOKEN_STORAGE_KEYS = {
+  ACCESS_TOKEN: 'accessToken',
+  REFRESH_TOKEN: 'refreshToken',
+  TOKEN_EXPIRES_AT: 'tokenExpiresAt',
 } as const;

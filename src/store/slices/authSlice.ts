@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '@/types/auth';
+import { User, FirebaseUserData, TokenData } from '@/types/auth';
 import {
   loginThunk,
   signUpThunk,
@@ -8,11 +8,18 @@ import {
   signInWithFacebookThunk,
   signInWithGitHubThunk,
   forgotPasswordThunk,
+  loginWithFirebaseThunk,
+  signUpWithFirebaseThunk,
 } from '../thunks/authThunks';
+import { TOKEN_STORAGE_KEYS } from '@/constants';
 
 interface AuthState {
   user: User | null;
+  firebaseUser: FirebaseUserData | null;
   token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  tokenExpiresAt: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -20,8 +27,14 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
+  firebaseUser: null,
   token: null,
-  isAuthenticated: false,
+  accessToken: localStorage.getItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN),
+  refreshToken: localStorage.getItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN),
+  tokenExpiresAt: localStorage.getItem(TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT)
+    ? parseInt(localStorage.getItem(TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT)!)
+    : null,
+  isAuthenticated: !!localStorage.getItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN),
   isLoading: false,
   error: null,
 };
@@ -39,15 +52,66 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.error = null;
     },
+    setFirebaseAuth: (
+      state,
+      action: PayloadAction<{
+        user: FirebaseUserData;
+        tokens: TokenData;
+      }>
+    ) => {
+      state.firebaseUser = action.payload.user;
+      state.accessToken = action.payload.tokens.accessToken;
+      state.refreshToken = action.payload.tokens.refreshToken;
+      state.tokenExpiresAt =
+        Date.now() + action.payload.tokens.expiresIn * 1000;
+      state.isAuthenticated = true;
+      state.error = null;
+
+      // Persist to localStorage
+      localStorage.setItem(
+        TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+        action.payload.tokens.accessToken
+      );
+      localStorage.setItem(
+        TOKEN_STORAGE_KEYS.REFRESH_TOKEN,
+        action.payload.tokens.refreshToken
+      );
+      localStorage.setItem(
+        TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+        state.tokenExpiresAt.toString()
+      );
+    },
+    updateAccessToken: (
+      state,
+      action: PayloadAction<{ accessToken: string; expiresIn: number }>
+    ) => {
+      state.accessToken = action.payload.accessToken;
+      state.tokenExpiresAt = Date.now() + action.payload.expiresIn * 1000;
+      localStorage.setItem(
+        TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+        action.payload.accessToken
+      );
+      localStorage.setItem(
+        TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+        state.tokenExpiresAt.toString()
+      );
+    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
       state.isLoading = false;
     },
     logout: state => {
       state.user = null;
+      state.firebaseUser = null;
       state.token = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.tokenExpiresAt = null;
       state.isAuthenticated = false;
       state.error = null;
+      localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
+      localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+      localStorage.removeItem(TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT);
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
@@ -59,6 +123,78 @@ const authSlice = createSlice({
     },
   },
   extraReducers: builder => {
+    // Firebase Login thunk
+    builder
+      .addCase(loginWithFirebaseThunk.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(loginWithFirebaseThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.firebaseUser = action.payload.user;
+        state.accessToken = action.payload.tokens.accessToken;
+        state.refreshToken = action.payload.tokens.refreshToken;
+        state.tokenExpiresAt =
+          Date.now() + action.payload.tokens.expiresIn * 1000;
+        state.isAuthenticated = true;
+        state.error = null;
+
+        // Persist tokens
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+          action.payload.tokens.accessToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.REFRESH_TOKEN,
+          action.payload.tokens.refreshToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+          state.tokenExpiresAt.toString()
+        );
+      })
+      .addCase(loginWithFirebaseThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || 'Firebase login failed';
+        state.isAuthenticated = false;
+      });
+
+    // Firebase Sign Up thunk
+    builder
+      .addCase(signUpWithFirebaseThunk.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(signUpWithFirebaseThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.firebaseUser = action.payload.user;
+        state.accessToken = action.payload.tokens.accessToken;
+        state.refreshToken = action.payload.tokens.refreshToken;
+        state.tokenExpiresAt =
+          Date.now() + action.payload.tokens.expiresIn * 1000;
+        state.isAuthenticated = true;
+        state.error = null;
+
+        // Persist tokens
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+          action.payload.tokens.accessToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.REFRESH_TOKEN,
+          action.payload.tokens.refreshToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+          state.tokenExpiresAt.toString()
+        );
+      })
+      .addCase(signUpWithFirebaseThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || 'Firebase sign up failed';
+        state.isAuthenticated = false;
+      });
+
     // Login thunk
     builder
       .addCase(loginThunk.pending, state => {
@@ -103,9 +239,16 @@ const authSlice = createSlice({
       .addCase(logoutThunk.fulfilled, state => {
         state.isLoading = false;
         state.user = null;
+        state.firebaseUser = null;
         state.token = null;
+        state.accessToken = null;
+        state.refreshToken = null;
+        state.tokenExpiresAt = null;
         state.isAuthenticated = false;
         state.error = null;
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT);
       })
       .addCase(logoutThunk.rejected, (state, action) => {
         state.isLoading = false;
@@ -183,6 +326,14 @@ const authSlice = createSlice({
   },
 });
 
-export const { setLoading, setAuth, setError, logout, updateUser, clearError } =
-  authSlice.actions;
+export const {
+  setLoading,
+  setAuth,
+  setFirebaseAuth,
+  updateAccessToken,
+  setError,
+  logout,
+  updateUser,
+  clearError,
+} = authSlice.actions;
 export default authSlice.reducer;

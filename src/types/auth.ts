@@ -32,3 +32,50 @@ export interface ResetPasswordData {
   token: string;
   password: string;
 }
+
+// Firebase Login Types
+export interface FirebaseLoginRequest {
+  idToken: string;
+  deviceId: string;
+  platform: 'web' | 'mobile' | 'desktop';
+}
+
+export interface TokenData {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number; // seconds
+}
+
+export interface FirebaseUserData {
+  id: string;
+  email: string;
+  name?: string;
+  avatar?: string;
+  role: 'admin' | 'user' | 'basic';
+}
+
+export interface FirebaseLoginResponse {
+  error: boolean;
+  code: number;
+  message: string;
+  data: {
+    user: FirebaseUserData;
+    tokens: TokenData;
+  } | null;
+  traceId: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  error: boolean;
+  code: number;
+  message: string;
+  data: {
+    accessToken: string;
+    expiresIn: number;
+  } | null;
+  traceId: string;
+}
