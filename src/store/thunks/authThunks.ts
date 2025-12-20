@@ -152,33 +152,23 @@ export const signUpWithFirebaseThunk = createAsyncThunk<
     // Step 3: Get idToken từ Firebase
     const idToken = await userCredential.user.getIdToken();
 
-    // Step 4: (temporarily) skip backend; just inspect idToken
-    // const signUpRequest: FirebaseLoginRequest = {
-    //   idToken,
-    //   deviceId: getDeviceId(),
-    //   platform: 'web',
-    // };
-    // const response = await authService.signUpWithFirebase(signUpRequest);
-    // if (response.error || !response.data) {
-    //   return rejectWithValue(response.message || 'Firebase sign up failed');
-    // }
+    // Step 4: Send idToken to Backend with signup info
+    const signUpRequest: FirebaseLoginRequest = {
+      idToken,
+      deviceId: getDeviceId(),
+      platform: 'web',
+    };
 
-    console.log('Firebase sign up idToken:', idToken);
+    const response = await authService.signUpWithFirebase(signUpRequest);
 
-    // Temporary return: surface idToken in place of backend accessToken
+    if (response.error || !response.data) {
+      return rejectWithValue(response.message || 'Firebase sign up failed');
+    }
+
+    // Step 5: Return response from backend
     return {
-      user: {
-        id: userCredential.user.uid,
-        email: userCredential.user.email || '',
-        name: userCredential.user.displayName || undefined,
-        avatar: userCredential.user.photoURL || undefined,
-        role: 'user',
-      },
-      tokens: {
-        accessToken: idToken,
-        refreshToken: '',
-        expiresIn: 0,
-      },
+      user: response.data.user,
+      tokens: response.data.tokens,
     };
   } catch (error: unknown) {
     const errorMessage = getErrorMessage(error, 'Firebase sign up failed');
