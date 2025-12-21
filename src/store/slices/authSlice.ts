@@ -255,7 +255,7 @@ const authSlice = createSlice({
         state.error = action.payload || 'Logout failed';
       });
 
-    // Google sign in thunk
+    // Google sign in thunk (Firebase -> Backend tokens)
     builder
       .addCase(signInWithGoogleThunk.pending, state => {
         state.isLoading = true;
@@ -263,10 +263,26 @@ const authSlice = createSlice({
       })
       .addCase(signInWithGoogleThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.firebaseUser = action.payload.user;
+        state.accessToken = action.payload.tokens.accessToken;
+        state.refreshToken = action.payload.tokens.refreshToken;
+        state.tokenExpiresAt =
+          Date.now() + action.payload.tokens.expiresIn * 1000;
         state.isAuthenticated = true;
         state.error = null;
+
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+          action.payload.tokens.accessToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.REFRESH_TOKEN,
+          action.payload.tokens.refreshToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+          state.tokenExpiresAt.toString()
+        );
       })
       .addCase(signInWithGoogleThunk.rejected, (state, action) => {
         state.isLoading = false;
@@ -291,7 +307,7 @@ const authSlice = createSlice({
         state.error = action.payload || 'Facebook sign in failed';
       });
 
-    // GitHub sign in thunk
+    // GitHub sign in thunk (Firebase -> Backend tokens)
     builder
       .addCase(signInWithGitHubThunk.pending, state => {
         state.isLoading = true;
@@ -299,10 +315,26 @@ const authSlice = createSlice({
       })
       .addCase(signInWithGitHubThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.firebaseUser = action.payload.user;
+        state.accessToken = action.payload.tokens.accessToken;
+        state.refreshToken = action.payload.tokens.refreshToken;
+        state.tokenExpiresAt =
+          Date.now() + action.payload.tokens.expiresIn * 1000;
         state.isAuthenticated = true;
         state.error = null;
+
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+          action.payload.tokens.accessToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.REFRESH_TOKEN,
+          action.payload.tokens.refreshToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+          state.tokenExpiresAt.toString()
+        );
       })
       .addCase(signInWithGitHubThunk.rejected, (state, action) => {
         state.isLoading = false;
