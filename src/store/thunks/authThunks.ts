@@ -63,6 +63,18 @@ const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (errorObj?.code === 'auth/user-not-found') {
     return 'User not found';
   }
+  if (errorObj?.code === 'auth/account-exists-with-different-credential') {
+    return 'An account with this email already exists with a different sign-in method. Please use your original sign-in method.';
+  }
+  if (errorObj?.code === 'auth/popup-blocked') {
+    return 'Sign-in popup was blocked. Please allow popups and try again.';
+  }
+  if (errorObj?.code === 'auth/popup-closed-by-user') {
+    return 'Sign-in popup was closed. Please try again.';
+  }
+  if (errorObj?.code === 'auth/cancelled-popup-request') {
+    return 'Sign-in was cancelled. Please try again.';
+  }
   return errorObj?.message || defaultMessage;
 };
 
@@ -263,7 +275,7 @@ export const logoutThunk = createAsyncThunk<
 
 // Google sign in thunk
 export const signInWithGoogleThunk = createAsyncThunk<
-  AuthPayload,
+  FirebaseAuthPayload,
   void,
   { rejectValue: string }
 >('auth/signInWithGoogle', async (_, { rejectWithValue }) => {
@@ -277,12 +289,26 @@ export const signInWithGoogleThunk = createAsyncThunk<
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
 
-    const token = await userCredential.user.getIdToken();
-    const userData = createUserData(userCredential.user);
+    // Get idToken from Firebase
+    const idToken = await userCredential.user.getIdToken();
 
-    localStorage.setItem('token', token);
+    // Send idToken to backend
+    const loginRequest: FirebaseLoginRequest = {
+      idToken,
+      deviceId: getDeviceId(),
+      platform: 'web',
+    };
 
-    return { user: userData, token };
+    const response = await authService.loginWithFirebase(loginRequest);
+
+    if (response.error || !response.data) {
+      return rejectWithValue(response.message || 'Google sign in failed');
+    }
+
+    return {
+      user: response.data.user,
+      tokens: response.data.tokens,
+    };
   } catch (error: unknown) {
     const errorMessage = getErrorMessage(error, 'Google sign in failed');
     return rejectWithValue(errorMessage);
@@ -317,9 +343,9 @@ export const signInWithFacebookThunk = createAsyncThunk<
   }
 });
 
-// GitHub sign in thunk
+// GitHub sign in thunk (Firebase -> Backend tokens)
 export const signInWithGitHubThunk = createAsyncThunk<
-  AuthPayload,
+  FirebaseAuthPayload,
   void,
   { rejectValue: string }
 >('auth/signInWithGitHub', async (_, { rejectWithValue }) => {
@@ -333,12 +359,26 @@ export const signInWithGitHubThunk = createAsyncThunk<
     const provider = new GithubAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
 
-    const token = await userCredential.user.getIdToken();
-    const userData = createUserData(userCredential.user);
+    // Get idToken from Firebase
+    const idToken = await userCredential.user.getIdToken();
 
-    localStorage.setItem('token', token);
+    // Send idToken to backend
+    const loginRequest: FirebaseLoginRequest = {
+      idToken,
+      deviceId: getDeviceId(),
+      platform: 'web',
+    };
 
-    return { user: userData, token };
+    const response = await authService.loginWithFirebase(loginRequest);
+
+    if (response.error || !response.data) {
+      return rejectWithValue(response.message || 'GitHub sign in failed');
+    }
+
+    return {
+      user: response.data.user,
+      tokens: response.data.tokens,
+    };
   } catch (error: unknown) {
     const errorMessage = getErrorMessage(error, 'GitHub sign in failed');
     return rejectWithValue(errorMessage);
