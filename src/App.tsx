@@ -2,19 +2,21 @@ import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Layout from './components/Layout';
+import DashboardLayout from './components/DashboardLayout';
 import LoadingSpinner from './components/LoadingSpinner';
 import { useTheme } from './hooks/useTheme';
 
-// Lazy load pages
 const Home = React.lazy(() => import('@/pages/Home'));
 const About = React.lazy(() => import('@/pages/About'));
 const Login = React.lazy(() => import('@/pages/Login'));
 const SignUp = React.lazy(() => import('@/pages/SignUp'));
 const ForgotPassword = React.lazy(() => import('@/pages/ForgotPassword'));
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
+const Tasks = React.lazy(() => import('@/pages/Tasks'));
+const Calendar = React.lazy(() => import('@/pages/Calendar'));
+const Settings = React.lazy(() => import('@/pages/Settings'));
 const NotFound = React.lazy(() => import('@/pages/NotFound'));
 
-// Protected Route Component
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -34,19 +36,23 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="signup" element={<SignUp />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
-
-            {/* Protected routes */}
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
+          </Route>
+
+          {/* Dashboard routes with separate layout */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </Suspense>
