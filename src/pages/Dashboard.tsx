@@ -1,75 +1,257 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/useAuth';
-import Card from '@/components/Card';
-import Table from '@/components/Table';
-
-// Mock data for demonstration
-const mockTableData = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User' },
-];
+import { useTasks } from '@/hooks/useTasks';
+import TaskCard from '@/components/TaskCard';
+import TimerCard from '@/components/TimerCard';
+import PlannedTasks from '@/components/PlannedTasks';
+import ProjectProgress from '@/components/ProjectProgress';
+import Modal from '@/components/Modal';
+import Button from '@/components/Button';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import toast from 'react-hot-toast';
+import { COLORS, FONTS } from '@/constants/theme';
 
 const Dashboard: React.FC = () => {
-  const { t } = useTranslation();
-  const { user } = useAuth();
+  const {
+    tasks,
+    activeTask,
+    isLoading,
+    fetchTasks,
+    fetchActiveTask,
+    activateTask,
+    completeTask,
+    createTask,
+  } = useTasks();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    estimateHours: '',
+    deadline: '',
+  });
+  const [taskProgress, setTaskProgress] = useState(0);
 
-  const columns = [
-    { key: 'id', header: 'ID' },
-    { key: 'name', header: 'Name' },
-    { key: 'email', header: 'Email' },
-    { key: 'role', header: 'Role' },
-  ];
+  useEffect(() => {
+    fetchTasks();
+    fetchActiveTask();
+  }, [fetchTasks, fetchActiveTask]);
+
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.estimateHours || !formData.deadline) return;
+
+    await createTask({
+      name: formData.name,
+      estimateHours: Number(formData.estimateHours),
+      deadline: formData.deadline,
+    });
+
+    setFormData({ name: '', estimateHours: '', deadline: '' });
+    setIsCreateModalOpen(false);
+    fetchTasks();
+  };
+
+  const handleActivateTask = async (taskId: string) => {
+    // Check if there's already an active task
+    if (activeTask && activeTask.id !== taskId) {
+      toast.error(
+        `Please complete "${activeTask.name}" before activating another task`
+      );
+      return;
+    }
+
+    await activateTask(taskId);
+    await fetchActiveTask();
+    setTaskProgress(0);
+  };
+
+  const handleCompleteTask = async (taskId: string) => {
+    await completeTask(taskId);
+    await fetchActiveTask();
+    fetchTasks();
+  };
+
+  const plannedTasksList = tasks
+    .filter(t => t.status === 'PLANNED')
+    .map(t => ({
+      id: t.id,
+      title: t.name,
+      dueDate: new Date(t.deadline).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      icon: '📊',
+      color: 'bg-emerald-100',
+    }));
+
+  if (isLoading && tasks.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <>
       <Helmet>
-        <title>Dashboard - React Boilerplate</title>
-        <meta name="description" content="User dashboard" />
+        <title>Dashboard - Donezo</title>
+        <meta name="description" content="Task management dashboard" />
       </Helmet>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('pages.dashboard')}
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Welcome back, {user?.displayName || user?.email}!
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1
+              className="text-3xl font-bold"
+              style={{ color: COLORS.TEXT_PRIMARY }}
+            >
+              Dashboard
+            </h1>
+            <p className="mt-1" style={{ color: COLORS.TEXT_SECONDARY }}>
+              Plan, prioritize, and accomplish your tasks with ease.
+            </p>
+          </div>
+          <Button
+            onClick={() => setIsCreateModalOpen(true)}
+            style={{
+              backgroundColor: COLORS.PRIMARY,
+              color: COLORS.WHITE,
+            }}
+          >
+            + New Task
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card title="Total Users" hover>
-            <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-              1,234
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              +12% from last month
-            </p>
-          </Card>
-          <Card title="Active Sessions" hover>
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-              567
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              +8% from last month
-            </p>
-          </Card>
-          <Card title="Revenue" hover>
-            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              $45,678
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              +23% from last month
-            </p>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            {activeTask ? (
+              <TaskCard
+                title={activeTask.name}
+                estimatedTime={`${activeTask.estimateHours}:00:00 (Estimated)`}
+                deadline={new Date(activeTask.deadline).toLocaleDateString(
+                  'en-US',
+                  { month: 'short', day: 'numeric', year: 'numeric' }
+                )}
+                status="running"
+                onComplete={() => handleCompleteTask(activeTask.id)}
+              />
+            ) : (
+              <div
+                className="p-6 rounded-lg border-2 border-dashed text-center"
+                style={{
+                  borderColor: COLORS.BORDER,
+                  backgroundColor: COLORS.BG_SECONDARY,
+                }}
+              >
+                <p
+                  style={{
+                    color: COLORS.TEXT_SECONDARY,
+                    fontSize: FONTS.SIZE.LG,
+                  }}
+                >
+                  No active task. Select one to get started!
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Timer Card */}
+          <div>
+            <TimerCard
+              initialTime={activeTask ? activeTask.estimateHours * 3600 : 5048}
+              isActive={!!activeTask}
+              onComplete={() => {
+                if (activeTask) {
+                  handleCompleteTask(activeTask.id);
+                }
+              }}
+              onProgressChange={setTaskProgress}
+            />
+          </div>
         </div>
 
-        <Card title="Recent Users">
-          <Table data={mockTableData} columns={columns} />
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <PlannedTasks
+              tasks={plannedTasksList}
+              onAddTask={() => setIsCreateModalOpen(true)}
+              onSelectTask={handleActivateTask}
+            />
+          </div>
+
+          <div>
+            <ProjectProgress
+              percentage={taskProgress}
+              taskName={activeTask?.name || 'No active task'}
+              isActive={!!activeTask}
+            />
+          </div>
+        </div>
       </div>
+
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Create New Task"
+      >
+        <form onSubmit={handleCreateTask} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Task Name</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter task name"
+              className="w-full px-3 py-2 border rounded-md"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Estimate (hours)
+            </label>
+            <input
+              type="number"
+              value={formData.estimateHours}
+              onChange={e =>
+                setFormData({ ...formData, estimateHours: e.target.value })
+              }
+              placeholder="e.g., 6"
+              min="0.5"
+              step="0.5"
+              className="w-full px-3 py-2 border rounded-md"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Deadline</label>
+            <input
+              type="date"
+              value={formData.deadline}
+              onChange={e =>
+                setFormData({ ...formData, deadline: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded-md"
+              required
+            />
+          </div>
+          <div className="flex gap-2 justify-end pt-4">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(false)}
+              className="px-4 py-2 text-gray-700 border rounded-md hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+            >
+              Create Task
+            </button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 };
