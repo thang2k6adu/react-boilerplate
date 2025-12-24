@@ -289,7 +289,7 @@ const authSlice = createSlice({
         state.error = action.payload || 'Google sign in failed';
       });
 
-    // Facebook sign in thunk
+    // Facebook sign in thunk (Firebase -> Backend tokens)
     builder
       .addCase(signInWithFacebookThunk.pending, state => {
         state.isLoading = true;
@@ -297,10 +297,26 @@ const authSlice = createSlice({
       })
       .addCase(signInWithFacebookThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.firebaseUser = action.payload.user;
+        state.accessToken = action.payload.tokens.accessToken;
+        state.refreshToken = action.payload.tokens.refreshToken;
+        state.tokenExpiresAt =
+          Date.now() + action.payload.tokens.expiresIn * 1000;
         state.isAuthenticated = true;
         state.error = null;
+
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.ACCESS_TOKEN,
+          action.payload.tokens.accessToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.REFRESH_TOKEN,
+          action.payload.tokens.refreshToken
+        );
+        localStorage.setItem(
+          TOKEN_STORAGE_KEYS.TOKEN_EXPIRES_AT,
+          state.tokenExpiresAt.toString()
+        );
       })
       .addCase(signInWithFacebookThunk.rejected, (state, action) => {
         state.isLoading = false;

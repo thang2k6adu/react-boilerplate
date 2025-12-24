@@ -94,24 +94,32 @@ export const loginWithFirebaseThunk = createAsyncThunk<
   { email: string; password: string },
   { rejectValue: string }
 >('auth/loginWithFirebase', async (credentials, { rejectWithValue }) => {
+  console.log('🔵 [loginWithFirebaseThunk] Starting...');
+
   if (!auth) {
     const error =
       'Firebase is not configured. Please set up Firebase in .env file.';
+    console.error('❌ [loginWithFirebaseThunk] Firebase not configured');
     return rejectWithValue(error);
   }
 
   try {
     // Step 1: Login with Firebase
+    console.log('🔵 [loginWithFirebaseThunk] Step 1: Logging into Firebase...');
     const userCredential = await signInWithEmailAndPassword(
       auth,
       credentials.email,
       credentials.password
     );
+    console.log('✅ [loginWithFirebaseThunk] Firebase login successful');
 
     // Step 2: Get idToken từ Firebase
+    console.log('🔵 [loginWithFirebaseThunk] Step 2: Getting idToken...');
     const idToken = await userCredential.user.getIdToken();
+    console.log('✅ [loginWithFirebaseThunk] idToken obtained');
 
     // Step 3: Send idToken to Backend
+    console.log('🔵 [loginWithFirebaseThunk] Step 3: Calling backend...');
     const loginRequest: FirebaseLoginRequest = {
       idToken,
       deviceId: getDeviceId(),
@@ -119,17 +127,24 @@ export const loginWithFirebaseThunk = createAsyncThunk<
     };
 
     const response = await authService.loginWithFirebase(loginRequest);
+    console.log('🔵 [loginWithFirebaseThunk] Backend response:', response);
 
     if (response.error || !response.data) {
+      console.error(
+        '❌ [loginWithFirebaseThunk] Backend returned error:',
+        response.message
+      );
       return rejectWithValue(response.message || 'Firebase login failed');
     }
 
     // Step 4: Return response from backend
+    console.log('✅ [loginWithFirebaseThunk] Login complete, returning data');
     return {
       user: response.data.user,
       tokens: response.data.tokens,
     };
   } catch (error: unknown) {
+    console.error('❌ [loginWithFirebaseThunk] Error caught:', error);
     const errorMessage = getErrorMessage(error, 'Firebase login failed');
     return rejectWithValue(errorMessage);
   }
@@ -315,9 +330,9 @@ export const signInWithGoogleThunk = createAsyncThunk<
   }
 });
 
-// Facebook sign in thunk
+// Facebook sign in thunk (Firebase -> Backend tokens)
 export const signInWithFacebookThunk = createAsyncThunk<
-  AuthPayload,
+  FirebaseAuthPayload,
   void,
   { rejectValue: string }
 >('auth/signInWithFacebook', async (_, { rejectWithValue }) => {
@@ -331,12 +346,26 @@ export const signInWithFacebookThunk = createAsyncThunk<
     const provider = new FacebookAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
 
-    const token = await userCredential.user.getIdToken();
-    const userData = createUserData(userCredential.user);
+    // Get idToken from Firebase
+    const idToken = await userCredential.user.getIdToken();
 
-    localStorage.setItem('token', token);
+    // Send idToken to backend
+    const loginRequest: FirebaseLoginRequest = {
+      idToken,
+      deviceId: getDeviceId(),
+      platform: 'web',
+    };
 
-    return { user: userData, token };
+    const response = await authService.loginWithFirebase(loginRequest);
+
+    if (response.error || !response.data) {
+      return rejectWithValue(response.message || 'Facebook sign in failed');
+    }
+
+    return {
+      user: response.data.user,
+      tokens: response.data.tokens,
+    };
   } catch (error: unknown) {
     const errorMessage = getErrorMessage(error, 'Facebook sign in failed');
     return rejectWithValue(errorMessage);

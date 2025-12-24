@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,6 +12,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Card from '@/components/Card';
 import { ROUTES } from '@/constants';
+import toast from 'react-hot-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,6 +24,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { isLoading: authLoading, error: authError } = useAppSelector(
     state => state.auth
   );
@@ -39,17 +41,23 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     setFirebaseError(null);
+    console.log('🔵 Starting login process...');
     try {
+      console.log('🔵 Dispatching loginWithFirebaseThunk...');
       const result = await dispatch(
         loginWithFirebaseThunk({
           email: data.email,
           password: data.password,
         })
       ).unwrap();
-      console.log('Firebase login successful:', result);
+      console.log('✅ Login successful:', result);
+      toast.success('Login successful!');
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
+      console.error('❌ Login failed:', err);
       const errorMessage = typeof err === 'string' ? err : 'Login failed';
       setFirebaseError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
