@@ -36,7 +36,7 @@ const Matchmaking: React.FC = () => {
         disconnect();
       }
     };
-  }, [connect, disconnect, state]);
+  }, []);
 
   const handleJoinMatchmaking = () => {
     if (error) {
