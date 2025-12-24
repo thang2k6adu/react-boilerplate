@@ -14,6 +14,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
 import taskReducer from './slices/taskSlice';
+import matchmakingReducer from './slices/matchmakingSlice';
 
 const persistConfig = {
   key: 'root',
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   theme: themeReducer,
   task: taskReducer,
+  matchmaking: matchmakingReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -6,6 +6,7 @@ import {
   Calendar,
   Settings,
   LogOut,
+  Swords,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/utils/helpers';
@@ -36,6 +37,12 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       label: 'Calendar',
       icon: Calendar,
       path: '/dashboard/calendar',
+      section: 'menu',
+    },
+    {
+      label: 'Matchmaking',
+      icon: Swords,
+      path: '/matchmaking',
       section: 'menu',
     },
     {

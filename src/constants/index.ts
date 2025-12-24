@@ -6,6 +6,7 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   DASHBOARD: '/dashboard',
   TASKS: '/tasks',
+  MATCHMAKING: '/matchmaking',
 } as const;
 
 export const USER_ROLES = {
@@ -34,6 +35,12 @@ export const API_ENDPOINTS = {
     ACTIVATE: (id: string) => `/tasks/${id}/activate`,
     COMPLETE: (id: string) => `/tasks/${id}/complete`,
     ACTIVE: '/tasks/active',
+  },
+  MATCHMAKING: {
+    JOIN: '/matchmaking/join',
+    CANCEL: '/matchmaking/cancel',
+    STATUS: '/matchmaking/status',
+    STATS: '/matchmaking/stats',
   },
 } as const;
 

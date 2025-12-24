@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,6 +11,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Card from '@/components/Card';
 import { ROUTES } from '@/constants';
+import toast from 'react-hot-toast';
 
 const signUpSchema = z
   .object({
@@ -29,6 +30,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 const SignUp: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { isLoading: authLoading, error: authError } = useAppSelector(
     state => state.auth
   );
@@ -45,17 +47,19 @@ const SignUp: React.FC = () => {
   const onSubmit = async (data: SignUpFormData) => {
     setFirebaseError(null);
     try {
-      const result = await dispatch(
+      await dispatch(
         signUpWithFirebaseThunk({
           email: data.email,
           password: data.password,
           displayName: data.displayName,
         })
       ).unwrap();
-      console.log('Firebase sign up successful:', result);
+      toast.success('Account created successfully!');
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
       const errorMessage = typeof err === 'string' ? err : 'Sign up failed';
       setFirebaseError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

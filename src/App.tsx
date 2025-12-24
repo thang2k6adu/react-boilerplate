@@ -15,6 +15,7 @@ const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
 const Tasks = React.lazy(() => import('@/pages/Tasks'));
 const Calendar = React.lazy(() => import('@/pages/Calendar'));
 const Settings = React.lazy(() => import('@/pages/Settings'));
+const Matchmaking = React.lazy(() => import('@/pages/Matchmaking'));
 const NotFound = React.lazy(() => import('@/pages/NotFound'));
 
 import ProtectedRoute from './components/ProtectedRoute';
@@ -53,6 +54,18 @@ function App() {
             <Route path="tasks" element={<Tasks />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="settings" element={<Settings />} />
+          </Route>
+
+          {/* Matchmaking route - separate from dashboard but with same layout */}
+          <Route
+            path="/matchmaking"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Matchmaking />} />
           </Route>
         </Routes>
       </Suspense>
