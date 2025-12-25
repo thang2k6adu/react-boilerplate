@@ -7,6 +7,8 @@ export interface Task {
   deadline: string;
   status: TaskStatus;
   isActive: boolean;
+  progress?: number; // 0-100%
+  totalTimeSpent?: number; // Total seconds spent
   remainingTime?: number;
   userId?: string;
   createdAt: string;

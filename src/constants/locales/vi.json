@@ -12,7 +12,8 @@
     "back": "Quay lại",
     "next": "Tiếp theo",
     "previous": "Trước",
-    "submit": "Gửi"
+    "submit": "Gửi",
+    "close": "Đóng"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -35,5 +36,30 @@
     "dashboard": "Bảng điều khiển",
     "notFound": "Không tìm thấy trang",
     "notFoundDescription": "Trang bạn đang tìm kiếm không tồn tại."
+  },
+  "tasks": {
+    "selectTask": "Chọn Task",
+    "selectTaskDescription": "Bạn đã tìm được phòng! Hãy chọn task muốn làm.",
+    "noTasksAvailable": "Không có task nào. Tạo task trước.",
+    "confirmSelection": "Xác Nhận Chọn",
+    "currentTask": "Task Hiện Tại",
+    "timeSpent": "Thời Gian Đã Làm",
+    "progress": "Tiến Độ",
+    "estimate": "Ước Tính",
+    "totalSpent": "Tổng Thời Gian",
+    "pause": "Tạm Dừng",
+    "stop": "Dừng",
+    "resume": "Tiếp Tục",
+    "sessionStopped": "Phiên Đã Dừng",
+    "taskCompleted": "Hoàn Thành Task!",
+    "congratulations": "Chúc Mừng!",
+    "greatWork": "Làm Tốt Lắm!",
+    "duration": "Thời Lượng",
+    "expEarned": "EXP Nhận Được",
+    "progressUpdate": "Cập Nhật Tiến Độ",
+    "taskCompletedMessage": "Bạn đã hoàn thành task này! Xuất sắc!",
+    "stayInRoom": "Ở Lại Phòng",
+    "selectNewTask": "Chọn Task Mới",
+    "leaveAndMatchmaking": "Rời Phòng & Tìm Đối Tác Mới"
   }
 }
