@@ -9,6 +9,14 @@ export {
 } from './authThunks';
 
 export {
+  activateTaskThunk as activateSessionTaskThunk,
+  pauseSessionThunk,
+  resumeSessionThunk,
+  stopSessionThunk,
+  getProgressThunk,
+} from './trackingSessionThunks';
+
+export {
   fetchTasksThunk,
   fetchActiveTaskThunk,
   createTaskThunk,

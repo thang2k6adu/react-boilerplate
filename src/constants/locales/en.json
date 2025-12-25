@@ -12,7 +12,8 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
-    "submit": "Submit"
+    "submit": "Submit",
+    "close": "Close"
   },
   "auth": {
     "login": "Login",
@@ -35,5 +36,30 @@
     "dashboard": "Dashboard",
     "notFound": "Page Not Found",
     "notFoundDescription": "The page you are looking for does not exist."
+  },
+  "tasks": {
+    "selectTask": "Select Task",
+    "selectTaskDescription": "You've found a room! Choose a task you want to work on.",
+    "noTasksAvailable": "No tasks available. Create a task first.",
+    "confirmSelection": "Confirm Selection",
+    "currentTask": "Current Task",
+    "timeSpent": "Time Spent",
+    "progress": "Progress",
+    "estimate": "Estimate",
+    "totalSpent": "Total Spent",
+    "pause": "Pause",
+    "stop": "Stop",
+    "resume": "Resume",
+    "sessionStopped": "Session Stopped",
+    "taskCompleted": "Task Completed!",
+    "congratulations": "Congratulations!",
+    "greatWork": "Great Work!",
+    "duration": "Duration",
+    "expEarned": "EXP Earned",
+    "progressUpdate": "Progress Update",
+    "taskCompletedMessage": "You've completed this task! Well done!",
+    "stayInRoom": "Stay in Room",
+    "selectNewTask": "Select New Task",
+    "leaveAndMatchmaking": "Leave & Find New Partner"
   }
 }

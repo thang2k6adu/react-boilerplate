@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useMatchmaking } from '@/hooks/useMatchmaking';
@@ -6,9 +6,13 @@ import { UserState } from '@/types/matchmaking';
 import Button from '@/components/Button';
 import { MatchmakingStatus } from '@/components/MatchmakingStatus';
 import { RoomView } from '@/components/RoomView';
+import TaskSelectionDialog from '@/components/TaskSelectionDialog';
 
 const Matchmaking: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
+  const [showTaskSelection, setShowTaskSelection] = useState(false);
+  const [hasShownTaskDialog, setHasShownTaskDialog] = useState(false);
+
   const {
     state,
     isConnected,
@@ -36,7 +40,25 @@ const Matchmaking: React.FC = () => {
         disconnect();
       }
     };
-  }, []);
+  }, [connect, disconnect, state]);
+
+  // Show task selection dialog when user enters room
+  useEffect(() => {
+    if (state === UserState.IN_ROOM && !hasShownTaskDialog) {
+      // Show task selection dialog after a short delay
+      const timer = setTimeout(() => {
+        setShowTaskSelection(true);
+        setHasShownTaskDialog(true);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+
+    // Reset flag when leaving room
+    if (state !== UserState.IN_ROOM) {
+      setHasShownTaskDialog(false);
+    }
+  }, [state, hasShownTaskDialog]);
 
   const handleJoinMatchmaking = () => {
     if (error) {
@@ -256,6 +278,15 @@ const Matchmaking: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Task Selection Dialog (shown after match found) */}
+      <TaskSelectionDialog
+        isOpen={showTaskSelection}
+        onClose={() => setShowTaskSelection(false)}
+        onTaskSelected={() => {
+          setShowTaskSelection(false);
+        }}
+      />
     </div>
   );
 };
