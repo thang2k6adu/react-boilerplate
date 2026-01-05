@@ -35,11 +35,11 @@ const Matchmaking: React.FC = () => {
     connect();
 
     // Cleanup khi unmount
-    return () => {
-      if (state === UserState.IDLE) {
-        disconnect();
-      }
-    };
+    // return () => {
+    //   if (state === UserState.IDLE) {
+    //     disconnect();
+    //   }
+    // };
   }, [connect, disconnect, state]);
 
   // Show task selection dialog when user enters room
