@@ -19,6 +19,9 @@ export interface MatchData {
   roomId: string;
   opponentId: string;
   opponentName: string;
+  livekitRoomName?: string;
+  token?: string;
+  wsUrl?: string;
 }
 
 export interface MatchFoundEvent {
@@ -26,6 +29,11 @@ export interface MatchFoundEvent {
   opponentId: string;
   opponentName: string;
   message: string;
+  livekitRoomName: string;
+  token: string;
+  wsUrl: string;
+  matchedUsers?: string[];
+  timestamp?: string;
 }
 
 export interface OpponentDisconnectedEvent {

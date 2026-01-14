@@ -5,19 +5,18 @@ import { useMatchmaking } from '@/hooks/useMatchmaking';
 import { UserState } from '@/types/matchmaking';
 import Button from '@/components/Button';
 import { MatchmakingStatus } from '@/components/MatchmakingStatus';
-import { RoomView } from '@/components/RoomView';
-import TaskSelectionDialog from '@/components/TaskSelectionDialog';
+import VideoCall from '@/components/VideoCall';
+import { matchmakingService } from '@/services/matchmakingService';
+import toast from 'react-hot-toast';
 
 const Matchmaking: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [showTaskSelection, setShowTaskSelection] = useState(false);
-  const [hasShownTaskDialog, setHasShownTaskDialog] = useState(false);
+  const [isInVideoCall, setIsInVideoCall] = useState(false);
 
   const {
     state,
     isConnected,
     isConnecting,
-    room,
     matchData,
     error,
     isJoining,
@@ -42,23 +41,24 @@ const Matchmaking: React.FC = () => {
     // };
   }, [connect, disconnect, state]);
 
-  // Show task selection dialog when user enters room
+  // Automatically enter video call when matched
   useEffect(() => {
-    if (state === UserState.IN_ROOM && !hasShownTaskDialog) {
-      // Show task selection dialog after a short delay
-      const timer = setTimeout(() => {
-        setShowTaskSelection(true);
-        setHasShownTaskDialog(true);
-      }, 500);
-
-      return () => clearTimeout(timer);
+    if (
+      state === UserState.IN_ROOM &&
+      matchData?.livekitRoomName &&
+      matchData?.token &&
+      matchData?.wsUrl
+    ) {
+      setIsInVideoCall(true);
     }
+  }, [state, matchData]);
 
-    // Reset flag when leaving room
-    if (state !== UserState.IN_ROOM) {
-      setHasShownTaskDialog(false);
+  // Debug log
+  useEffect(() => {
+    if (matchData) {
+      console.log('Match data updated:', matchData);
     }
-  }, [state, hasShownTaskDialog]);
+  }, [matchData]);
 
   const handleJoinMatchmaking = () => {
     if (error) {
@@ -67,12 +67,44 @@ const Matchmaking: React.FC = () => {
     joinMatchmaking();
   };
 
-  // Debug log
-  useEffect(() => {
-    if (matchData) {
-      console.log('Match data updated:', matchData);
+  const handleLeaveVideoCall = async () => {
+    if (matchData?.roomId) {
+      try {
+        // Leave LiveKit room and update database
+        await matchmakingService.leaveRoomAPI(matchData.roomId);
+
+        // Leave WebSocket room
+        leaveRoom();
+
+        // Reset video call state
+        setIsInVideoCall(false);
+
+        toast.success('Left video call');
+      } catch (error) {
+        console.error('Error leaving video call:', error);
+        toast.error('Failed to leave room');
+      }
     }
-  }, [matchData]);
+  };
+
+  // If in video call, show VideoCall component
+  if (
+    isInVideoCall &&
+    matchData?.livekitRoomName &&
+    matchData?.token &&
+    matchData?.wsUrl
+  ) {
+    return (
+      <VideoCall
+        roomName={matchData.livekitRoomName}
+        token={matchData.token}
+        wsUrl={matchData.wsUrl}
+        userName={user?.displayName || user?.email || 'You'}
+        opponentName={matchData.opponentName}
+        onLeave={handleLeaveVideoCall}
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -117,120 +149,109 @@ const Matchmaking: React.FC = () => {
       )}
 
       {/* Main Content */}
-      {state === UserState.IN_ROOM ? (
-        /* Room View */
-        <RoomView
-          room={room}
-          matchData={matchData}
-          currentUserName={user?.displayName || user?.email || 'You'}
-          onLeaveRoom={leaveRoom}
-        />
-      ) : (
-        /* Matchmaking Controls */
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-          <div className="text-center space-y-6">
-            {/* Icon */}
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full shadow-lg">
-              <span className="text-5xl">🎓</span>
-            </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <div className="text-center space-y-6">
+          {/* Icon */}
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full shadow-lg">
+            <span className="text-5xl">🎓</span>
+          </div>
 
-            {/* Status Text */}
-            <div>
-              {state === UserState.IDLE && isConnected && (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Ready to study?
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Find a study partner and learn together
-                  </p>
-                </>
-              )}
-
-              {state === UserState.WAITING && (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Searching for study partner...
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Please wait while we match you with another learner
-                  </p>
-                </>
-              )}
-
-              {!isConnected && !isConnecting && (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Connection lost
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Click reconnect to try again
-                  </p>
-                </>
-              )}
-
-              {isConnecting && (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Connecting...
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Establishing connection to the server
-                  </p>
-                </>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {!isConnected && !isConnecting && (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={connect}
-                  className="min-w-[200px]"
-                >
-                  Reconnect
-                </Button>
-              )}
-
-              {isConnected && state === UserState.IDLE && (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={handleJoinMatchmaking}
-                  isLoading={isJoining}
-                  className="min-w-[200px]"
-                >
-                  {isJoining ? 'Searching...' : 'Find Study Partner'}
-                </Button>
-              )}
-
-              {state === UserState.WAITING && (
-                <Button
-                  variant="danger"
-                  size="lg"
-                  onClick={cancelMatchmaking}
-                  isLoading={isCanceling}
-                  className="min-w-[200px]"
-                >
-                  {isCanceling ? 'Canceling...' : 'Cancel'}
-                </Button>
-              )}
-            </div>
-
-            {/* Queue Info */}
-            {state === UserState.WAITING && (
-              <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  💡 <strong>Tip:</strong> Make sure you have a stable internet
-                  connection for the best experience
+          {/* Status Text */}
+          <div>
+            {state === UserState.IDLE && isConnected && (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Ready to study?
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Find a study partner and learn together
                 </p>
-              </div>
+              </>
+            )}
+
+            {state === UserState.WAITING && (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Searching for study partner...
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Please wait while we match you with another learner
+                </p>
+              </>
+            )}
+
+            {!isConnected && !isConnecting && (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Connection lost
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Click reconnect to try again
+                </p>
+              </>
+            )}
+
+            {isConnecting && (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Connecting...
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Establishing connection to the server
+                </p>
+              </>
             )}
           </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {!isConnected && !isConnecting && (
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={connect}
+                className="min-w-[200px]"
+              >
+                Reconnect
+              </Button>
+            )}
+
+            {isConnected && state === UserState.IDLE && (
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleJoinMatchmaking}
+                isLoading={isJoining}
+                className="min-w-[200px]"
+              >
+                {isJoining ? 'Searching...' : 'Find Study Partner'}
+              </Button>
+            )}
+
+            {state === UserState.WAITING && (
+              <Button
+                variant="danger"
+                size="lg"
+                onClick={cancelMatchmaking}
+                isLoading={isCanceling}
+                className="min-w-[200px]"
+              >
+                {isCanceling ? 'Canceling...' : 'Cancel'}
+              </Button>
+            )}
+          </div>
+
+          {/* Queue Info */}
+          {state === UserState.WAITING && (
+            <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                💡 <strong>Tip:</strong> Make sure you have a stable internet
+                connection for the best experience
+              </p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Info Cards */}
       {state === UserState.IDLE && isConnected && (
@@ -278,15 +299,6 @@ const Matchmaking: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Task Selection Dialog (shown after match found) */}
-      <TaskSelectionDialog
-        isOpen={showTaskSelection}
-        onClose={() => setShowTaskSelection(false)}
-        onTaskSelected={() => {
-          setShowTaskSelection(false);
-        }}
-      />
     </div>
   );
 };

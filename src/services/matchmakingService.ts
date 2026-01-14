@@ -213,6 +213,13 @@ class MatchmakingService {
     }
     this.socket.emit('leave_room');
   }
+
+  /**
+   * Leave room và update database
+   */
+  async leaveRoomAPI(roomId: string): Promise<void> {
+    await apiClient.post(`/rooms/${roomId}/leave`);
+  }
 }
 
 export const matchmakingService = new MatchmakingService();
