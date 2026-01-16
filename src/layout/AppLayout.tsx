@@ -1,5 +1,6 @@
 import React from 'react';
-import CollapsibleSidebar from '@/components/CollapsibleSidebar';
+import CollapsibleSidebar from '@/layout/CollapsibleSidebar';
+import { Header } from '@/layout/Header.tsx';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -12,7 +13,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <CollapsibleSidebar />
       </aside>
 
-      <main className="flex-1 bg-slate-100 p-4 overflow-auto">{children}</main>
+      <main className="relative flex-1 flex flex-col bg-slate-50">
+        <Header />
+        <section className="grid grid-cols-12 flex-1 overflow-auto p-8 gap-8">
+          {children}
+        </section>
+      </main>
     </div>
   );
 };
