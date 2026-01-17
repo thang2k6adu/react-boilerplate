@@ -4,6 +4,12 @@ export default {
   darkMode: ['class', 'class'],
   theme: {
     extend: {
+      backgroundImage: {
+        'linear-purple': 'var(--linear-purple)',
+        'linear-blue': 'var(--linear-blue)',
+        'linear-green': 'var(--linear-green)',
+        'linear-red': 'var(--linear-red)',
+      },
       colors: {
         gray: {
           black: '#000000',
@@ -69,9 +75,9 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        lg: 'calc(var(--radius) + 8px)',
+        md: 'var(--radius)',
+        sm: 'calc(var(--radius) - 8px)',
       },
       boxShadow: {
         md: '0 0 8px rgba(0,0,0,0.15)',

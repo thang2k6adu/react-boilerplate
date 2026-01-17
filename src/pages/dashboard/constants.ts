@@ -1,7 +1,10 @@
-import { CheckCircle2, ListChecks, CalendarCheck2, Timer } from 'lucide-react';
-import { Stat, TaskProgress, UpcomingTask, ProgressStatus } from './types';
+import {
+  StatCardProps,
+  TaskProgress,
+  UpcomingTask,
+  ProgressStatus,
+} from './types';
 
-// Semantic color mapping
 export const COLOR_MAP: Record<ProgressStatus, string> = {
   primary: '#8b5cf6',
   danger: '#ef4444',
@@ -14,12 +17,31 @@ export const BG_COLOR_MAP: Record<ProgressStatus, string> = {
   success: 'bg-emerald-500',
 };
 
-// Stats data
-export const DASHBOARD_STATS: Stat[] = [
-  { value: 1120, label: 'Total Task', icon: CheckCircle2 },
-  { value: 320, label: 'In Progress', icon: ListChecks },
-  { value: 760, label: 'Completed', icon: CalendarCheck2 },
-  { value: 40, label: 'Overdue', icon: Timer },
+export const DASHBOARD_STATS: StatCardProps[] = [
+  {
+    value: 1120,
+    label: 'Total Task',
+    icon: 'icons/total-task.png',
+    color: 'bg-linear-purple',
+  },
+  {
+    value: 320,
+    label: 'In Progress',
+    icon: 'icons/in-progress.png',
+    color: 'bg-linear-blue',
+  },
+  {
+    value: 760,
+    label: 'Completed',
+    icon: 'icons/planning.png',
+    color: 'bg-linear-red',
+  },
+  {
+    value: 40,
+    label: 'Completed',
+    icon: 'icons/completed.png',
+    color: 'bg-linear-green',
+  },
 ];
 
 // Work progress tasks data

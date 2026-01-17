@@ -1,11 +1,10 @@
-import { LucideIcon } from 'lucide-react';
-
 export type ProgressStatus = 'primary' | 'danger' | 'success';
 
-export type Stat = {
-  value: number;
+export type StatCardProps = {
+  value: string | number;
   label: string;
-  icon: LucideIcon;
+  icon: string;
+  color: string;
 };
 
 export type TaskProgress = {

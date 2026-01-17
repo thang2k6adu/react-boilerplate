@@ -40,6 +40,27 @@
     --chart-5: 27 87% 67%;
 
     --radius: 16px;
+
+    --linear-purple: linear-gradient(
+      90deg,
+      #ab94ff 26%,
+      rgba(171, 148, 255, 0.55) 100%
+    );
+    --linear-blue: linear-gradient(
+      90deg,
+      #96c9d1 26%,
+      rgba(150, 201, 209, 0.55) 100%
+    );
+    --linear-red: linear-gradient(
+      90deg,
+      #fb958d 26%,
+      rgba(251, 149, 141, 0.55) 100%
+    );
+    --linear-green: linear-gradient(
+      90deg,
+      #87ecaf 26%,
+      rgba(135, 236, 175, 0.55) 100%
+    );
   }
 
   .dark {

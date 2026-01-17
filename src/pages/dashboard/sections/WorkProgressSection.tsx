@@ -9,7 +9,6 @@ type WorkProgressSectionProps = {
 export function WorkProgressSection({ tasks }: WorkProgressSectionProps) {
   return (
     <section className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Work Progress */}
       <div className="flex flex-col gap-4">
         <h2 className="text-base font-bold text-gray-900">Work Progress</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -19,7 +18,6 @@ export function WorkProgressSection({ tasks }: WorkProgressSectionProps) {
         </div>
       </div>
 
-      {/* Working Status */}
       <div className="flex flex-col gap-4">
         <h2 className="text-base font-bold text-gray-900">Working Status</h2>
         <Card className="w-full border rounded-lg flex-1">
