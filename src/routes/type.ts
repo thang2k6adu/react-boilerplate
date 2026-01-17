@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export interface RouteConfig {
   path?: string;
-  element: ReactNode;
+  element?: ReactNode;
   index?: boolean;
   children?: RouteConfig[];
 }

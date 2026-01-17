@@ -1,6 +1,7 @@
 import React from 'react';
-import type { RouteConfig } from './types';
-import Layout from '@/components/Layout';
+import type { RouteConfig } from './type';
+// import Layout from '@/components/Layout';
+import { Layout } from '@/layout/AppLayout';
 import DashboardLayout from '@/components/DashboardLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
@@ -16,12 +17,13 @@ const Settings = React.lazy(() => import('@/pages/Settings'));
 const Matchmaking = React.lazy(() => import('@/pages/Matchmaking'));
 const NotFound = React.lazy(() => import('@/pages/NotFound'));
 
-const DashboardV2 = React.lazy(() => import('@/pages/DashboardV2'));
+const DashboardV2 = React.lazy(() => import('@/pages/dashboard/DashboardV2'));
+const TaskV2 = React.lazy(() => import('@/pages/task/TasksV2'));
 
 export const routes: RouteConfig[] = [
   {
     path: '/',
-    element: <Layout />,
+    // element: <Layout />,
     children: [
       { index: true, element: <Home /> },
       { path: 'about', element: <About /> },
@@ -33,10 +35,11 @@ export const routes: RouteConfig[] = [
   },
   {
     path: '/v2',
-    // element: <Layout />,
+    // TODO: gói protect route vào đây
+    element: <Layout />,
     children: [
       { index: true, element: <DashboardV2 /> },
-      { path: 'about', element: <About /> },
+      { path: 'tasks', element: <TaskV2 /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <SignUp /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
