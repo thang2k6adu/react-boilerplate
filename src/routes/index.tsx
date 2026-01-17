@@ -19,6 +19,7 @@ const NotFound = React.lazy(() => import('@/pages/NotFound'));
 
 const DashboardV2 = React.lazy(() => import('@/pages/dashboard/DashboardV2'));
 const TaskV2 = React.lazy(() => import('@/pages/task/TasksV2'));
+const Focus = React.lazy(() => import('@/pages/focus/Focus'));
 
 export const routes: RouteConfig[] = [
   {
@@ -40,7 +41,7 @@ export const routes: RouteConfig[] = [
     children: [
       { index: true, element: <DashboardV2 /> },
       { path: 'tasks', element: <TaskV2 /> },
-      { path: 'login', element: <Login /> },
+      { path: 'focus', element: <Focus /> },
       { path: 'signup', element: <SignUp /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
       { path: '*', element: <NotFound /> },
