@@ -78,9 +78,9 @@ export const WORK_PROGRESS_TASKS: TaskProgress[] = [
 
 // Upcoming tasks data
 export const UPCOMING_TASKS: UpcomingTask[] = [
-  { title: 'Finish Homework', date: 'May 18, 2023 | 09:00 AM' },
-  { title: 'Finish Homework', date: 'May 18, 2023 | 09:00 AM' },
-  { title: 'Finish Homework', date: 'May 18, 2023 | 09:00 AM' },
-  { title: 'Finish Homework', date: 'May 18, 2023 | 09:00 AM' },
-  { title: 'Finish Homework', date: 'May 18, 2023 | 09:00 AM' },
+  { title: 'Finish Homework', estimated: 3600 },
+  { title: 'Finish Homework', estimated: 3600 },
+  { title: 'Finish Homework', estimated: 3600 },
+  { title: 'Finish Homework', estimated: 3600 },
+  { title: 'Finish Homework', estimated: 3600 },
 ];
