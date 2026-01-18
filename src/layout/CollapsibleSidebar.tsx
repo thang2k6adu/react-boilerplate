@@ -8,8 +8,6 @@ import {
   Calendar,
   Settings,
   User,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -34,7 +32,6 @@ export default function CollapsibleSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ FIX ACTIVE LOGIC
   const isActive = (path: string) => {
     if (path === '/v2') {
       return location.pathname === '/v2';
@@ -44,90 +41,77 @@ export default function CollapsibleSidebar() {
     );
   };
 
-  // ✅ FIX HOVER COLOR
   const baseItemClass =
-    'justify-start gap-3 h-12 text-gray-400 hover:text-black';
+    'justify-start h-12 text-gray-400 hover:text-black rounded-md hover:bg-accent hover:text-accent-foreground px-4 py-3';
 
   const activeItemClass =
-    'bg-primary-900 text-primary-foreground hover:bg-primary-900 hover:text-primary-foreground';
+    'bg-primary text-primary-foreground hover:bg-primary-900 hover:text-primary-foreground';
+
+  const renderNavButton = (item: {
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    label: string;
+    path: string;
+  }) => {
+    const Icon = item.icon;
+    const active = isActive(item.path);
+
+    return (
+      <Button
+        key={item.label}
+        variant="ghost"
+        onClick={() => navigate(item.path)}
+        className={cn(
+          baseItemClass,
+          isCollapsed ? 'gap-0 justify-center' : 'gap-3',
+          active && activeItemClass
+        )}
+      >
+        <Icon className="h-6 w-6 flex-shrink-0" />
+        <span
+          className={cn(
+            'text-body-medium whitespace-nowrap transition-all duration-200 ease-out',
+            isCollapsed
+              ? 'absolute opacity-0 pointer-events-none'
+              : 'relative opacity-100'
+          )}
+        >
+          {item.label}
+        </span>
+      </Button>
+    );
+  };
 
   return (
     <div
+      onMouseEnter={() => setIsCollapsed(false)}
+      onMouseLeave={() => setIsCollapsed(true)}
       className={cn(
-        'relative flex h-screen flex-col border-r bg-background transition-all duration-300',
+        'relative flex h-screen flex-col bg-white shadow-md transition-all duration-300 ease-in-out',
         isCollapsed ? 'w-20' : 'w-64'
       )}
     >
-      {/* Toggle */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute -right-3 top-7 z-10 h-6 w-6 rounded-full border bg-background"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-      >
-        {isCollapsed ? (
-          <ChevronRight className="h-4 w-4" />
-        ) : (
-          <ChevronLeft className="h-4 w-4" />
-        )}
-      </Button>
-
-      {/* Top */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col gap-6">
         <div className="flex items-center gap-3 p-6 pb-4">
           <Heart className="h-8 w-8 flex-shrink-0 fill-gray-500 text-gray-500" />
-          {!isCollapsed && <span className="text-2xl font-bold">Logo</span>}
+          <span
+            className={cn(
+              'text-2xl text-black font-bold whitespace-nowrap overflow-hidden transition-all duration-200 ease-out',
+              isCollapsed
+                ? 'max-w-0 opacity-0 translate-x-[-6px]'
+                : 'max-w-[200px] opacity-100 translate-x-0'
+            )}
+          >
+            Logo
+          </span>
         </div>
 
-        {/* MAIN NAV */}
-        <nav className="flex flex-col gap-2 px-3">
-          {mainNavItems.map(item => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-
-            return (
-              <Button
-                key={item.label}
-                variant="ghost"
-                onClick={() => navigate(item.path)}
-                className={cn(
-                  baseItemClass,
-                  isCollapsed ? 'px-3 justify-center' : 'px-4',
-                  active && activeItemClass
-                )}
-              >
-                <Icon className="h-5 w-5 flex-shrink-0" />
-                {!isCollapsed && (
-                  <span className="text-base">{item.label}</span>
-                )}
-              </Button>
-            );
-          })}
+        <nav className="flex flex-col gap-3 px-3">
+          {mainNavItems.map(renderNavButton)}
         </nav>
       </div>
 
-      {/* BOTTOM NAV */}
-      <div className="flex flex-col gap-2 p-3 pb-6">
-        {bottomNavItems.map(item => {
-          const Icon = item.icon;
-          const active = isActive(item.path);
-
-          return (
-            <Button
-              key={item.label}
-              variant="ghost"
-              onClick={() => navigate(item.path)}
-              className={cn(
-                baseItemClass,
-                isCollapsed ? 'px-3 justify-center' : 'px-4',
-                active && activeItemClass
-              )}
-            >
-              <Icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && <span className="text-base">{item.label}</span>}
-            </Button>
-          );
-        })}
+      <div className="flex flex-col gap-3 p-3 pb-6">
+        {bottomNavItems.map(renderNavButton)}
       </div>
     </div>
   );

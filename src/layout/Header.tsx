@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, SearchIcon } from 'lucide-react';
+import { Bell, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,27 +14,31 @@ type HeaderProps = {
 
 export function Header({ user }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="px-4 md:px-6">
-        <div className="flex items-center justify-between gap-3 py-2">
-          <div className="relative w-full max-w-xl">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input
-              placeholder="Search tasks..."
-              className="pl-9 rounded-full bg-white"
-              aria-label="Search tasks"
-            />
-          </div>
+    <header className="sticky top-0 z-20 shadow-[0_1px_8px_-2px_rgba(0,0,0,0.15)] bg-white">
+      <div className="px-8 md:px-6">
+        <div className="flex items-center justify-between gap-3 py-4">
+          <Input
+            placeholder="Search tasks..."
+            className="px-10 py-3 bg-white w-[320px] h-12 rounded-md shadow-md !text-caption-lg-regular text-black"
+            aria-label="Search tasks"
+          />
 
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Bell className="size-5" />
+          <div className="flex items-center gap-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-fit h-fit rounded-full shadow-md p-2"
+            >
+              <Bell className="!size-6" fill="currentColor" />
               <span className="sr-only">Notifications</span>
             </Button>
 
-            <Button variant="ghost" className="h-auto px-2 py-1 rounded-full">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
+            <Button
+              variant="ghost"
+              className="h-auto p-2 rounded-full shadow-md"
+            >
+              <div className="flex items-center gap-4">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
                   <AvatarFallback>
                     {user?.name?.[0]?.toUpperCase() ?? 'U'}
@@ -42,11 +46,13 @@ export function Header({ user }: HeaderProps) {
                 </Avatar>
 
                 <div className="hidden sm:flex flex-col items-start leading-tight">
-                  <span className="text-sm font-medium">
+                  <span className="text-caption-lg-semibold">
                     {user?.name ?? 'Guest'}
                   </span>
                   {user?.role && (
-                    <span className="text-xs text-slate-500">{user.role}</span>
+                    <span className="text-caption-sm-regular text-muted-foreground">
+                      {user.role}
+                    </span>
                   )}
                 </div>
 

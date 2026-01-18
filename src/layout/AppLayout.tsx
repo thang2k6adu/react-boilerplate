@@ -6,12 +6,10 @@ import { Outlet } from 'react-router-dom';
 export const Layout: React.FC = () => {
   return (
     <div className="flex h-screen w-full">
-      <aside className="bg-slate-900 text-white flex items-center justify-center">
-        <CollapsibleSidebar />
-      </aside>
+      <CollapsibleSidebar />
 
-      <main className="relative flex-1 flex flex-col bg-slate-50">
-        <Header />
+      <main className="relative flex-1 flex flex-col">
+        <Header user={{ name: 'Tran Duc Thang', role: 'Admin' }} />
         <section className="grid grid-cols-12 flex-1 overflow-auto p-8 gap-8">
           <Outlet />
         </section>
