@@ -12,14 +12,28 @@ import {
 function DashboardV2() {
   return (
     <>
-      <section className="col-span-8 flex flex-col gap-6">
+      <section
+        className="
+          col-span-1
+          lg:col-span-8
+          flex flex-col gap-6
+        "
+      >
         <WelcomeSection />
         <StatsSection stats={DASHBOARD_STATS} />
         <ChartsSection />
         <WorkProgressSection tasks={WORK_PROGRESS_TASKS} />
       </section>
 
-      <SidebarSection upcomingTasks={UPCOMING_TASKS} />
+      <section
+        className="
+          col-span-1
+          lg:col-span-4
+          flex flex-col gap-6
+        "
+      >
+        <SidebarSection upcomingTasks={UPCOMING_TASKS} />
+      </section>
     </>
   );
 }

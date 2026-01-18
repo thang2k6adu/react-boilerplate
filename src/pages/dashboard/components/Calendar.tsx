@@ -112,7 +112,7 @@ export function Calendar() {
                 onClick={() => setSelected(d)}
                 className={`
           relative text-caption-lg-regular py-2 rounded cursor-pointer transition
-          border border-gray-300 w-[50px] h-[50px] flex items-center justify-center
+          border border-gray-300 w-fill h-[50px] flex items-center justify-center
           ${d.offset !== 0 ? 'text-gray-400' : 'text-gray-700'}
           ${today ? 'bg-violet-600 text-white' : ''}
           ${selected ? 'ring-2 ring-violet-600 ring-offset-1 z-10' : 'hover:bg-gray-50 z-0'}

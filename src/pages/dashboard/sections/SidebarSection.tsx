@@ -8,10 +8,9 @@ type SidebarSectionProps = {
 
 export function SidebarSection({ upcomingTasks }: SidebarSectionProps) {
   return (
-    <section className="col-span-4 flex flex-col gap-6">
+    <>
       <Calendar />
-
       <UpcomingTasks tasks={upcomingTasks} />
-    </section>
+    </>
   );
 }

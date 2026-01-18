@@ -10,7 +10,7 @@ export const Layout: React.FC = () => {
 
       <main className="relative flex-1 flex flex-col">
         <Header user={{ name: 'Tran Duc Thang', role: 'Admin' }} />
-        <section className="grid grid-cols-12 flex-1 overflow-auto p-8 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-auto p-8 gap-8">
           <Outlet />
         </section>
       </main>
