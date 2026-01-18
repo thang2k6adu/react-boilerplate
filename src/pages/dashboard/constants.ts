@@ -8,7 +8,7 @@ import {
 export const COLOR_MAP: Record<ProgressStatus, string> = {
   primary: '#8b5cf6',
   danger: '#ef4444',
-  success: '#10b981',
+  success: '#87ECAF',
 };
 
 export const BG_COLOR_MAP: Record<ProgressStatus, string> = {
@@ -48,24 +48,24 @@ export const DASHBOARD_STATS: StatCardProps[] = [
 export const WORK_PROGRESS_TASKS: TaskProgress[] = [
   {
     title: 'Dashboard Design',
-    progress: 90,
+    progress: 50,
     startDate: '10 Jan',
     estimated: '2 Hours',
     status: 'primary',
   },
   {
     title: 'Dashboard Design',
-    progress: 90,
-    startDate: '10 Jan',
-    estimated: '2 Hours',
-    status: 'primary',
-  },
-  {
-    title: 'Dashboard Design',
-    progress: 90,
+    progress: 10,
     startDate: '10 Jan',
     estimated: '2 Hours',
     status: 'danger',
+  },
+  {
+    title: 'Dashboard Design',
+    progress: 90,
+    startDate: '10 Jan',
+    estimated: '2 Hours',
+    status: 'primary',
   },
   {
     title: 'Dashboard Design',
