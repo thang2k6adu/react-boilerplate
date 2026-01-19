@@ -15,49 +15,45 @@ import {
 
 export function FilterSidebar() {
   return (
-    <div className="col-span-2 bg-white rounded-lg border p-4">
-      {/* Filter Section */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-4">Filter</h2>
+    <div className="mb-6">
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-h6-medium text-black">Sort by</span>
+          <button className="text-caption-lg-regular text-[#7272D9]">
+            Clear
+          </button>
+        </div>
+        <SortButtons options={SORT_OPTIONS} />
+      </div>
 
-        {/* Sort By */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Sort by</span>
-            <button className="text-xs text-gray-400">Clear</button>
-          </div>
-          <SortButtons options={SORT_OPTIONS} />
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-h6-medium text-black">Filter by</span>
+          <button className="text-caption-lg-regular text-[#7272D9]">
+            Clear
+          </button>
         </div>
 
-        {/* Filter By */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Filter By</span>
-            <button className="text-xs text-gray-400">Clear</button>
-          </div>
+        <div className="space-y-2">
+          <FilterGroup title="Category">
+            <CategoryFilter categories={CATEGORIES} />
+          </FilterGroup>
 
-          {/* Filter Categories */}
-          <div className="space-y-2">
-            <FilterGroup title="Category">
-              <CategoryFilter categories={CATEGORIES} />
-            </FilterGroup>
+          <FilterGroup title="Status">
+            <SimpleFilter options={STATUS_OPTIONS} />
+          </FilterGroup>
 
-            <FilterGroup title="Status">
-              <SimpleFilter options={STATUS_OPTIONS} />
-            </FilterGroup>
+          <FilterGroup title="Price">
+            <SimpleFilter options={PRICE_OPTIONS} />
+          </FilterGroup>
 
-            <FilterGroup title="Price">
-              <SimpleFilter options={PRICE_OPTIONS} />
-            </FilterGroup>
+          <FilterGroup title="Capacity">
+            <SimpleFilter options={CAPACITY_OPTIONS} />
+          </FilterGroup>
 
-            <FilterGroup title="Capacity">
-              <SimpleFilter options={CAPACITY_OPTIONS} />
-            </FilterGroup>
-
-            <FilterGroup title="Room">
-              <SimpleFilter options={ROOM_OPTIONS} />
-            </FilterGroup>
-          </div>
+          <FilterGroup title="Room">
+            <SimpleFilter options={ROOM_OPTIONS} />
+          </FilterGroup>
         </div>
       </div>
     </div>

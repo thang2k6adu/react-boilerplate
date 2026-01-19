@@ -15,21 +15,8 @@ export function FilterGroup({
 }: FilterGroupProps) {
   return (
     <div>
-      <button className="flex items-center justify-between w-full text-sm text-gray-700 mb-2 mt-3">
-        <span className="font-medium">{title}</span>
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+      <button className="flex items-center justify-between w-full mb-2 mt-3">
+        <span className="text-body-regular">{title}</span>
       </button>
       {isOpen && <div className="space-y-1.5 ml-2">{children}</div>}
     </div>
@@ -46,7 +33,7 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
       {categories.map(category => (
         <label
           key={category.name}
-          className="flex items-center justify-between text-xs text-gray-600 cursor-pointer hover:text-gray-900"
+          className="flex items-center justify-between text-caption-lg-regular text-gray-600 cursor-pointer hover:text-gray-900"
         >
           <div className="flex items-center gap-2">
             <input type="checkbox" className="rounded" />
@@ -73,7 +60,7 @@ export function SimpleFilter({ options }: SimpleFilterProps) {
       {options.map(option => (
         <label
           key={option.value}
-          className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer hover:text-gray-900"
+          className="flex items-center gap-2 text-caption-lg-regular text-gray-600 cursor-pointer hover:text-gray-900"
         >
           <input type="checkbox" className="rounded" />
           <span>{option.label}</span>

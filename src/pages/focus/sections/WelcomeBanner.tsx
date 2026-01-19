@@ -1,31 +1,42 @@
-import { BUTTON_COLORS } from '../constants';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export function WelcomeBanner() {
   return (
-    <div className="bg-white rounded-lg border p-6">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold mb-1">Welcome To</h2>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            Room Matching Area
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Find your best focus room here and start at just public
-          </p>
-          <button
-            className={`px-6 py-2 ${BUTTON_COLORS.primary} text-white text-sm font-medium rounded-lg transition`}
-          >
-            Select Room
-          </button>
-        </div>
-        <div className="flex-shrink-0">
+    <Card className="w-full rounded-md shadow-md bg-card">
+      <CardContent className="p-6">
+        <div className="flex flex-row justify-between w-full">
+          <div className="flex flex-col justify-between w-full">
+            <div className="flex flex-col gap-3 w-full">
+              <p className="text-h6-regular text-muted-foreground">
+                Welcome To
+              </p>
+
+              <div className="flex flex-col gap-0 w-fit">
+                <h2 className="text-h5-bold text-gray-black">
+                  Room Matching Area{' '}
+                </h2>
+                <p className="text-caption-lg-regular text-muted-foreground">
+                  You can match with other partner to finish your task or join
+                  public room to focus with others{' '}
+                </p>
+              </div>
+            </div>
+            <Button asChild>
+              <button className="inline-block w-fit h-fit px-4 py-3 !text-caption-lg-regular text-white">
+                Match Now!
+              </button>
+            </Button>
+          </div>
+
           <img
-            src="https://illustrations.popsy.co/amber/remote-work.svg"
-            alt="Focus illustration"
-            className="w-48 h-48 object-contain"
+            width={314}
+            height={190}
+            src="/icons/welcome-image.png"
+            alt="Welcome"
           />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

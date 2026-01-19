@@ -12,15 +12,20 @@ export function SortButtons({
   activeSort = 'newest',
 }: SortButtonsProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 overflow-x-auto scrollbar-hide">
       {options.map(option => (
         <button
           key={option.value}
-          className={`px-3 py-1.5 text-xs rounded-full ${
-            activeSort === option.value
-              ? BUTTON_COLORS.active
-              : BUTTON_COLORS.inactive
-          } hover:bg-gray-200 transition`}
+          className={`
+            shrink-0
+            px-3 py-1.5 text-xs rounded-full whitespace-nowrap
+            ${
+              activeSort === option.value
+                ? BUTTON_COLORS.active
+                : BUTTON_COLORS.inactive
+            }
+            hover:bg-gray-200 transition
+          `}
         >
           {option.label}
         </button>

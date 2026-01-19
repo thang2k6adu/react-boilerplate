@@ -6,15 +6,13 @@ import { ROOMS } from './constants';
 export default function FocusV2() {
   return (
     <>
-      {/* LEFT SIDEBAR - col-span-2 */}
-      <FilterSidebar />
+      <div className="col-span-3 bg-white rounded-lg border p-4 mb-6 shadow-md">
+        <FilterSidebar />
+      </div>
 
-      {/* RIGHT SECTION - col-span-10 */}
-      <div className="col-span-10 space-y-4">
-        {/* TOP SECTION - Welcome Banner */}
+      <div className="col-span-9 space-y-8">
         <WelcomeBanner />
 
-        {/* BOTTOM SECTION - Rooms Grid */}
         <RoomsGrid rooms={ROOMS} />
       </div>
     </>
