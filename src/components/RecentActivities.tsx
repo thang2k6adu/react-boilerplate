@@ -25,7 +25,7 @@ export function RecentActivities({ tasks }: RecentActivitiesProps) {
           {tasks.map((task, index) => (
             <div
               key={index}
-              className="cursor-pointer flex bg-white shadow-md items-start gap-3 p-3 border-l-4 border-violet-600 rounded-md hover:bg-gray-50 w-full"
+              className="cursor-pointer flex bg-white shadow-md items-start gap-3 p-3 border-l-4 border-violet-600 rounded-md hover:scale-[1.015] hover:shadow-lg transition w-full"
             >
               <div className="flex-1">
                 <h4 className="text-body-semi text-gray-900">{task.title}</h4>

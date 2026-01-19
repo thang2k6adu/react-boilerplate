@@ -33,12 +33,12 @@ export function TaskCard({
   const status = getStatusFromProgress(progress);
 
   return (
-    <Card className="w-full rounded-lg shadow-md">
+    <Card className="w-full rounded-lg shadow-md hover:scale-[1.015] hover:shadow-lg transition">
       <CardContent className="p-[16px] pt-[32px]">
         <div className="flex flex-col w-full h-auto gap-[16px]">
           <div className="flex flex-col w-auto h-auto gap-[4px]">
             <div className="flex flex-col gap-[0px]">
-              <span className="text-caption-xs-regular text-muted-foreground">
+              <span className="text-caption-lg-regular text-muted-foreground">
                 Ongoing Task
               </span>
               <span className="text-body-semi">{title}</span>
@@ -55,7 +55,7 @@ export function TaskCard({
                 />
               </div>
 
-              <span className="text-caption-xs-regular text-muted-foreground">
+              <span className="text-caption-lg-regular text-muted-foreground">
                 {progress}% completed
               </span>
             </div>
@@ -66,19 +66,19 @@ export function TaskCard({
 
             <div className="flex w-full h-auto justify-between text-[12px]">
               <div>
-                <span className="text-caption-xs-bold text-gray-700">
+                <span className="text-caption-lg-bold text-gray-700">
                   Start Date:
                 </span>{' '}
-                <span className="text-caption-xs-regular text-gray-600">
+                <span className="text-caption-lg-regular text-gray-600">
                   {startDate}
                 </span>
               </div>
 
               <div>
-                <span className="text-caption-xs-bold text-gray-700">
+                <span className="text-caption-lg-bold text-gray-700">
                   Estimated:
                 </span>{' '}
-                <span className="text-caption-xs-regular text-gray-600">
+                <span className="text-caption-lg-regular text-gray-600">
                   {estimated}
                 </span>
               </div>

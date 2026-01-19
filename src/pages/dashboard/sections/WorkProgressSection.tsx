@@ -8,8 +8,8 @@ type WorkProgressSectionProps = {
 
 export function WorkProgressSection({ tasks }: WorkProgressSectionProps) {
   return (
-    <section className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="flex flex-col gap-4">
+    <section className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-4 lg:col-span-2">
         <h2 className="text-h6-semi text-gray-900">Work Progress</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {tasks.map((task, index) => (

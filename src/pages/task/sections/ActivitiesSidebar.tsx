@@ -1,5 +1,6 @@
 import { TaskCard } from '@/components/TaskCard';
 import { Activity } from '../types';
+import { Plus } from 'lucide-react';
 
 type ActivitiesSidebarProps = {
   activities: Activity[];
@@ -7,34 +8,34 @@ type ActivitiesSidebarProps = {
 
 export function ActivitiesSidebar({ activities }: ActivitiesSidebarProps) {
   return (
-    <div className="col-span-3 bg-white rounded-lg border p-4">
-      {/* Total Work Card */}
-      <div className="flex items-center gap-3 mb-6 p-3 bg-gray-50 rounded-lg">
-        <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-        </div>
+    <div className="col-span-3">
+      <div className="flex items-center justify-between mb-6 p-3 bg-gray-50 rounded-lg">
         <div>
-          <h3 className="font-semibold text-gray-900">Total Work</h3>
-          <p className="text-xs text-gray-500">All Tasks</p>
+          <h3 className="text-h4-medium text-gray-900">Activities</h3>
+          <p className="text-body-regular text-gray-500">June 28th, 2025</p>
         </div>
+        <button
+          className="
+        p-4
+        rounded-xl
+        flex items-center justify-center
+        bg-violet-600 text-white
+        hover:bg-violet-700
+        active:scale-95
+        transition
+      "
+        >
+          <Plus className="w-5 h-5" />
+        </button>
       </div>
+      <div className="flex flex-col gap-3 text-gray-400">
+        <h6 className="text-h6 font-regular">All Tasks</h6>
 
-      <div className="space-y-3">
-        {activities.map((activity, index) => (
-          <TaskCard key={index} {...activity} />
-        ))}
+        <div className="space-y-3">
+          {activities.map((activity, index) => (
+            <TaskCard key={index} {...activity} />
+          ))}
+        </div>
       </div>
     </div>
   );

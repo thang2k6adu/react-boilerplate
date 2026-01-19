@@ -13,7 +13,7 @@ export default function TasksV2() {
     <>
       <ActivitiesSidebar activities={ACTIVITIES} />
 
-      <div className="col-span-9 space-y-4">
+      <div className="col-span-9 space-y-8">
         <ChartsSection
           chartData={TOTAL_WORK_CHART_DATA}
           taskPercentage={TASK_PERCENTAGE}
