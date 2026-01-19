@@ -20,6 +20,7 @@ const NotFound = React.lazy(() => import('@/pages/NotFound'));
 const DashboardV2 = React.lazy(() => import('@/pages/dashboard/DashboardV2'));
 const TaskV2 = React.lazy(() => import('@/pages/task/TasksV2'));
 const FocusV2 = React.lazy(() => import('@/pages/focus/FocusV2'));
+const FocusRoomV2 = React.lazy(() => import('@/pages/focus-room/FocusRoomV2'));
 
 export const routes: RouteConfig[] = [
   {
@@ -47,6 +48,7 @@ export const routes: RouteConfig[] = [
       { path: '*', element: <NotFound /> },
     ],
   },
+  { path: 'focus-room', element: <FocusRoomV2 /> },
   {
     path: '/dashboard',
     element: (
