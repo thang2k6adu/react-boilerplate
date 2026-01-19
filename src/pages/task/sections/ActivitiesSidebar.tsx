@@ -1,4 +1,4 @@
-import { ActivityCard } from '../components/ActivityCard';
+import { TaskCard } from '@/components/TaskCard';
 import { Activity } from '../types';
 
 type ActivitiesSidebarProps = {
@@ -31,10 +31,9 @@ export function ActivitiesSidebar({ activities }: ActivitiesSidebarProps) {
         </div>
       </div>
 
-      {/* Activities List */}
       <div className="space-y-3">
         {activities.map((activity, index) => (
-          <ActivityCard key={index} {...activity} />
+          <TaskCard key={index} {...activity} />
         ))}
       </div>
     </div>

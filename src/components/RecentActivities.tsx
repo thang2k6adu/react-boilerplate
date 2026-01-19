@@ -1,17 +1,21 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { UpcomingTask } from '../types';
 import { formatDurationHYM } from '@/utils/date';
 
-type UpcomingTasksProps = {
-  tasks: UpcomingTask[];
+export type RecentActivity = {
+  title: string;
+  estimated: number;
 };
 
-export function UpcomingTasks({ tasks }: UpcomingTasksProps) {
+type RecentActivitiesProps = {
+  tasks: RecentActivity[];
+};
+
+export function RecentActivities({ tasks }: RecentActivitiesProps) {
   return (
     <Card className="w-full bg-transparent shadow-none border-none">
       <CardContent className="p-0 gap-4 flex flex-col">
         <div className="flex flex-col gap-0">
-          <h3 className="text-h6-semi text-black">Upcoming</h3>
+          <h3 className="text-h6-semi text-black">Recent Activities</h3>
           <p className="text-caption-lg-regular text-muted-foreground">
             Wednesday, 13th March, 2026
           </p>

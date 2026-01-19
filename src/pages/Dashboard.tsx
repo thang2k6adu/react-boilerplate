@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTasks } from '@/hooks/useTasks';
-import TaskCard from '@/components/TaskCard';
 import TimerCard from '@/components/TimerCard';
 import PlannedTasks from '@/components/PlannedTasks';
 import ProjectProgress from '@/components/ProjectProgress';
@@ -125,16 +124,41 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             {activeTask ? (
-              <TaskCard
-                title={activeTask.name}
-                estimatedTime={`${activeTask.estimateHours}:00:00 (Estimated)`}
-                deadline={new Date(activeTask.deadline).toLocaleDateString(
-                  'en-US',
-                  { month: 'short', day: 'numeric', year: 'numeric' }
-                )}
-                status="running"
-                onComplete={() => handleCompleteTask(activeTask.id)}
-              />
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-8 text-white relative overflow-hidden group hover:shadow-xl transition-shadow">
+                <div className="absolute top-6 left-6">
+                  <span className="bg-emerald-400/50 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">
+                    Running Task
+                  </span>
+                </div>
+
+                <div className="mt-16">
+                  <h2 className="text-3xl font-bold mb-6">{activeTask.name}</h2>
+
+                  <div className="flex items-center space-x-6 mb-8">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-emerald-50">
+                        {activeTask.estimateHours}:00:00 (Estimated)
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-emerald-50">
+                        Deadline:{' '}
+                        {new Date(activeTask.deadline).toLocaleDateString(
+                          'en-US',
+                          { month: 'short', day: 'numeric', year: 'numeric' }
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleCompleteTask(activeTask.id)}
+                    className="bg-white text-emerald-600 px-6 py-2 rounded-lg font-semibold text-sm hover:bg-emerald-50 transition-colors shadow-lg"
+                  >
+                    COMPLETE TASK
+                  </button>
+                </div>
+              </div>
             ) : (
               <div
                 className="p-6 rounded-lg border-2 border-dashed text-center"

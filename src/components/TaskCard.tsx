@@ -1,79 +1,91 @@
-import React from 'react';
-import { Clock, Calendar, ArrowUpRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
-interface TaskCardProps {
-  title: string;
-  estimatedTime: string;
-  deadline: string;
-  status?: 'running' | 'pending' | 'completed';
-  avatars?: string[];
-  onComplete?: () => void;
-}
+type ProgressStatus = 'primary' | 'danger' | 'success';
 
-const TaskCard: React.FC<TaskCardProps> = ({
-  title,
-  estimatedTime,
-  deadline,
-  onComplete,
-}) => {
-  return (
-    <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-8 text-white relative overflow-hidden group hover:shadow-xl transition-shadow">
-      {/* Status Badge */}
-      <div className="absolute top-6 left-6">
-        <span className="bg-emerald-400/50 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">
-          Running Task
-        </span>
-      </div>
-
-      {/* Expand Icon */}
-      <button className="absolute top-6 right-6 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors backdrop-blur-sm">
-        <ArrowUpRight className="w-4 h-4" />
-      </button>
-
-      {/* Task Content */}
-      <div className="mt-16">
-        <h2 className="text-3xl font-bold mb-6">{title}</h2>
-
-        {/* Task Meta */}
-        <div className="flex items-center space-x-6 mb-8">
-          <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-emerald-100" />
-            <span className="text-sm text-emerald-50">{estimatedTime}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-emerald-100" />
-            <span className="text-sm text-emerald-50">
-              Deadline: {deadline}
-            </span>
-          </div>
-        </div>
-
-        {/* Team Avatars and Action */}
-        <div className="flex items-center justify-between">
-          {/* Avatars */}
-          <div className="flex -space-x-2">
-            <div className="w-8 h-8 bg-purple-500 rounded-full border-2 border-white flex items-center justify-center">
-              <span className="text-xs font-semibold">T</span>
-            </div>
-            <div className="w-8 h-8 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
-              <span className="text-xs font-semibold">A</span>
-            </div>
-            <div className="w-8 h-8 bg-pink-500 rounded-full border-2 border-white flex items-center justify-center">
-              <span className="text-xs font-semibold">+3</span>
-            </div>
-          </div>
-
-          {/* Complete Button */}
-          <button
-            onClick={onComplete}
-            className="bg-white text-emerald-600 px-6 py-2 rounded-lg font-semibold text-sm hover:bg-emerald-50 transition-colors shadow-lg"
-          >
-            COMPLETE TASK
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+const COLOR_MAP: Record<ProgressStatus, string> = {
+  primary: '#8b5cf6',
+  danger: '#ef4444',
+  success: '#87ECAF',
 };
 
-export default TaskCard;
+export type TaskCardData = {
+  title: string;
+  progress: number;
+  startDate: string;
+  estimated: string;
+  subtitle?: string;
+  date?: string;
+  status?: string;
+};
+
+function getStatusFromProgress(progress: number): ProgressStatus {
+  if (progress >= 100) return 'success';
+  if (progress < 30) return 'danger';
+  return 'primary';
+}
+
+export function TaskCard({
+  title,
+  progress,
+  startDate,
+  estimated,
+}: TaskCardData) {
+  const status = getStatusFromProgress(progress);
+
+  return (
+    <Card className="w-full rounded-lg shadow-md">
+      <CardContent className="p-[16px] pt-[32px]">
+        <div className="flex flex-col w-full h-auto gap-[16px]">
+          <div className="flex flex-col w-auto h-auto gap-[4px]">
+            <div className="flex flex-col gap-[0px]">
+              <span className="text-caption-xs-regular text-muted-foreground">
+                Ongoing Task
+              </span>
+              <span className="text-body-semi">{title}</span>
+            </div>
+
+            <div className="flex flex-col w-auto h-auto gap-[4px]">
+              <div className="w-full h-[8px] bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${progress}%`,
+                    backgroundColor: COLOR_MAP[status],
+                  }}
+                />
+              </div>
+
+              <span className="text-caption-xs-regular text-muted-foreground">
+                {progress}% completed
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col w-full h-auto gap-[4px]">
+            <div className="w-full h-[0.5px] bg-gray-200" />
+
+            <div className="flex w-full h-auto justify-between text-[12px]">
+              <div>
+                <span className="text-caption-xs-bold text-gray-700">
+                  Start Date:
+                </span>{' '}
+                <span className="text-caption-xs-regular text-gray-600">
+                  {startDate}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-caption-xs-bold text-gray-700">
+                  Estimated:
+                </span>{' '}
+                <span className="text-caption-xs-regular text-gray-600">
+                  {estimated}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

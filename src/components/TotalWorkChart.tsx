@@ -28,7 +28,6 @@ export default function TotalWorkChart({
 }: TotalWorkChartProps) {
   return (
     <div className="flex flex-col gap-4 w-full">
-      {/* Filter button */}
       <div className="flex justify-end">
         <button
           className="flex items-center gap-1.5

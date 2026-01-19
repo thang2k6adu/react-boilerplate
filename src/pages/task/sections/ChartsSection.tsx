@@ -1,26 +1,43 @@
-import { TotalWorkChart } from '../components/TotalWorkChart';
-import { TaskPercentageChart } from '../components/TaskPercentageChart';
-import { ChartDataPoint } from '../types';
+import { Card, CardContent } from '@/components/ui/card';
+import TotalWorkChart from '@/components/TotalWorkChart';
+import TaskPercentageChart from '@/components/TaskPercentageChart';
 
 type ChartsSectionProps = {
-  chartData: ChartDataPoint[];
-  chartLabels: string[];
+  chartData: { month: string; Tasks: number }[];
   taskPercentage: {
-    working: { value: number; color: string; stroke: string };
-    completed: { value: number; color: string; stroke: string };
-    pending: { value: number; color: string; stroke: string };
+    planning: number;
+    inProgress: number;
+    finished: number;
   };
+  referenceX?: string;
 };
 
 export function ChartsSection({
   chartData,
-  chartLabels,
   taskPercentage,
+  referenceX,
 }: ChartsSectionProps) {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <TotalWorkChart data={chartData} labels={chartLabels} />
-      <TaskPercentageChart data={taskPercentage} />
-    </div>
+    <section className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="w-full h-full flex flex-col gap-3">
+        <div className="text-h6-semi">Total work</div>
+
+        <Card className="w-full shadow-md">
+          <CardContent className="p-4">
+            <TotalWorkChart data={chartData} referenceX={referenceX} />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="w-full h-full flex flex-col gap-3">
+        <div className="text-h6-semi">Task Percentage</div>
+
+        <Card className="w-full h-full shadow-md">
+          <CardContent className="p-4">
+            <TaskPercentageChart data={taskPercentage} />
+          </CardContent>
+        </Card>
+      </div>
+    </section>
   );
 }

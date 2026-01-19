@@ -1,9 +1,5 @@
-import {
-  StatCardProps,
-  TaskProgress,
-  UpcomingTask,
-  ProgressStatus,
-} from './types';
+import { StatCardProps, TaskProgress, ProgressStatus } from './types';
+import { RecentActivity } from '@/components/RecentActivities';
 
 export const COLOR_MAP: Record<ProgressStatus, string> = {
   primary: '#8b5cf6',
@@ -77,7 +73,7 @@ export const WORK_PROGRESS_TASKS: TaskProgress[] = [
 ];
 
 // Upcoming tasks data
-export const UPCOMING_TASKS: UpcomingTask[] = [
+export const UPCOMING_TASKS: RecentActivity[] = [
   { title: 'Finish Homework', estimated: 3600 },
   { title: 'Finish Homework', estimated: 3600 },
   { title: 'Finish Homework', estimated: 3600 },

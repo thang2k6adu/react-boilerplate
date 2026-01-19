@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
-import TotalWorkChart from '@/pages/dashboard/components/TotalWorkChart';
-import TaskPercentageChart from '@/pages/dashboard/components/TaskPercentageChart';
+import TotalWorkChart from '@/components/TotalWorkChart';
+import TaskPercentageChart from '@/components/TaskPercentageChart';
 
 export function ChartsSection() {
   const data = [

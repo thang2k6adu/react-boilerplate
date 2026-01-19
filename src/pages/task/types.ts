@@ -6,6 +6,8 @@ export type Activity = {
   date: string;
   status: string;
   progress: number;
+  startDate: string;
+  estimated: string;
 };
 
 export type RecentActivity = {

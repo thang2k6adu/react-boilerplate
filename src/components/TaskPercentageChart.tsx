@@ -21,7 +21,6 @@ export default function TaskPercentageChart({ data }: { data: TaskData }) {
 
   return (
     <div className="flex w-full h-[260px] items-center gap-6">
-      {/* Pie */}
       <div className="h-full w-[260px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -43,7 +42,6 @@ export default function TaskPercentageChart({ data }: { data: TaskData }) {
         </ResponsiveContainer>
       </div>
 
-      {/* Legend */}
       <div className="flex flex-col gap-3 text-sm">
         {chartData.map(item => (
           <div key={item.name} className="flex items-center gap-3">

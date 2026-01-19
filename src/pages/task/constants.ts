@@ -1,4 +1,4 @@
-import { Activity, RecentActivity, ChartDataPoint } from './types';
+import { Activity } from './types';
 
 // Semantic color mapping
 export const STATUS_COLOR_MAP = {
@@ -16,7 +16,9 @@ export const ACTIVITIES: Activity[] = [
     subtitle: 'DashedUI Kit',
     date: 'March 20th, 2021',
     status: 'In Progress',
-    progress: 60,
+    progress: 29,
+    startDate: '10 Jan',
+    estimated: '2 Hours',
   },
   {
     title: 'Dashboard Design',
@@ -24,6 +26,26 @@ export const ACTIVITIES: Activity[] = [
     date: 'March 20th, 2021',
     status: 'In Progress',
     progress: 60,
+    startDate: '10 Jan',
+    estimated: '2 Hours',
+  },
+  {
+    title: 'Dashboard Design',
+    subtitle: 'DashedUI Kit',
+    date: 'March 20th, 2021',
+    status: 'In Progress',
+    progress: 100,
+    startDate: '10 Jan',
+    estimated: '2 Hours',
+  },
+  {
+    title: 'Dashboard Design',
+    subtitle: 'DashedUI Kit',
+    date: 'March 20th, 2021',
+    status: 'In Progress',
+    progress: 30,
+    startDate: '10 Jan',
+    estimated: '2 Hours',
   },
   {
     title: 'Dashboard Design',
@@ -31,42 +53,34 @@ export const ACTIVITIES: Activity[] = [
     date: 'March 20th, 2021',
     status: 'In Progress',
     progress: 60,
+    startDate: '10 Jan',
+    estimated: '2 Hours',
   },
-  {
-    title: 'Dashboard Design',
-    subtitle: 'DashedUI Kit',
-    date: 'March 20th, 2021',
-    status: 'In Progress',
-    progress: 60,
-  },
-  {
-    title: 'Dashboard Design',
-    subtitle: 'DashedUI Kit',
-    date: 'March 20th, 2021',
-    status: 'In Progress',
-    progress: 60,
-  },
-];
-
-// Recent activities data
-export const RECENT_ACTIVITIES: RecentActivity[] = [
-  { title: 'Finish Homework', time: '2:30 pm' },
-  { title: 'Finish Homework', time: '2:30 pm' },
-  { title: 'Finish Homework', time: '2:30 pm' },
-  { title: 'Finish Homework', time: '2:30 pm' },
-  { title: 'Finish Homework', time: '2:30 pm' },
 ];
 
 // Chart data
-export const TOTAL_WORK_CHART_DATA: ChartDataPoint[] = [
-  40, 60, 45, 70, 55, 80, 50, 65, 75, 60, 85, 70,
+export const TOTAL_WORK_CHART_DATA = [
+  { month: 'Jan', Tasks: 40 },
+  { month: 'Feb', Tasks: 60 },
+  { month: 'Mar', Tasks: 45 },
+  { month: 'Apr', Tasks: 70 },
+  { month: 'May', Tasks: 55 },
+  { month: 'Jun', Tasks: 80 },
+  { month: 'Jul', Tasks: 50 },
 ];
-
-export const CHART_LABELS = ['12', '13', '14', '15', '16', '17', '18'];
 
 // Task percentage data
 export const TASK_PERCENTAGE = {
-  working: { value: 75, color: 'bg-purple-600', stroke: '#8B5CF6' },
-  completed: { value: 60, color: 'bg-blue-600', stroke: '#3B82F6' },
-  pending: { value: 45, color: 'bg-pink-600', stroke: '#EC4899' },
+  planning: 12,
+  inProgress: 8,
+  finished: 20,
 };
+
+// Upcoming tasks data (replacing recent activities)
+export const UPCOMING_TASKS = [
+  { title: 'Finish Homework', estimated: 7200 }, // 2 hours
+  { title: 'Dashboard Design', estimated: 10800 }, // 3 hours
+  { title: 'Code Review', estimated: 3600 }, // 1 hour
+  { title: 'Team Meeting', estimated: 5400 }, // 1.5 hours
+  { title: 'Write Documentation', estimated: 9000 }, // 2.5 hours
+];

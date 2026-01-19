@@ -14,8 +14,3 @@ export type TaskProgress = {
   estimated: string;
   status: ProgressStatus;
 };
-
-export type UpcomingTask = {
-  title: string;
-  estimated: number;
-};
