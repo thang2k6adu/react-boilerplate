@@ -1,12 +1,26 @@
 export const ROUTES = {
   HOME: '/',
   ABOUT: '/about',
+
   LOGIN: '/login',
   SIGNUP: '/signup',
   FORGOT_PASSWORD: '/forgot-password',
+
   DASHBOARD: '/dashboard',
   TASKS: '/tasks',
   MATCHMAKING: '/matchmaking',
+
+  V2: {
+    HOME: '/v2',
+    LOGIN: '/v2/login',
+    SIGNUP: '/v2/signup',
+    FORGOT_PASSWORD: '/v2/forgot-password',
+
+    DASHBOARD: '/v2',
+    TASKS: '/v2/tasks',
+    FOCUS: '/v2/focus',
+    FOCUS_ROOM: '/v2/focus-room',
+  },
 } as const;
 
 export const USER_ROLES = {

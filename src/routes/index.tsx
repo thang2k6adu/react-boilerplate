@@ -1,6 +1,5 @@
 import React from 'react';
 import type { RouteConfig } from './type';
-// import Layout from '@/components/Layout';
 import { Layout } from '@/layout/AppLayout';
 import DashboardLayout from '@/components/DashboardLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -25,7 +24,6 @@ const FocusRoomV2 = React.lazy(() => import('@/pages/focus-room/FocusRoomV2'));
 export const routes: RouteConfig[] = [
   {
     path: '/',
-    // element: <Layout />,
     children: [
       { index: true, element: <Home /> },
       { path: 'about', element: <About /> },
@@ -35,41 +33,57 @@ export const routes: RouteConfig[] = [
       { path: '*', element: <NotFound /> },
     ],
   },
+
   {
     path: '/v2',
-    // TODO: gói protect route vào đây
-    element: <Layout />,
     children: [
-      { index: true, element: <DashboardV2 /> },
-      { path: 'tasks', element: <TaskV2 /> },
-      { path: 'focus', element: <FocusV2 /> },
+      { path: 'login', element: <Login /> },
       { path: 'signup', element: <SignUp /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
+
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            element: <Layout />,
+            children: [
+              { index: true, element: <DashboardV2 /> },
+              { path: 'tasks', element: <TaskV2 /> },
+              { path: 'focus', element: <FocusV2 /> },
+              { path: 'focus-room', element: <FocusRoomV2 /> },
+            ],
+          },
+        ],
+      },
+
       { path: '*', element: <NotFound /> },
     ],
   },
-  { path: 'focus-room', element: <FocusRoomV2 /> },
+
   {
     path: '/dashboard',
-    element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute />,
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: 'tasks', element: <Tasks /> },
-      { path: 'calendar', element: <Calendar /> },
-      { path: 'settings', element: <Settings /> },
+      {
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <Dashboard /> },
+          { path: 'tasks', element: <Tasks /> },
+          { path: 'calendar', element: <Calendar /> },
+          { path: 'settings', element: <Settings /> },
+        ],
+      },
     ],
   },
+
   {
     path: '/matchmaking',
-    element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
-    ),
-    children: [{ index: true, element: <Matchmaking /> }],
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [{ index: true, element: <Matchmaking /> }],
+      },
+    ],
   },
 ];
