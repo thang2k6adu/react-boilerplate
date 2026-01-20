@@ -4,6 +4,7 @@ import { ParticipantCard } from '../components/ParticipantCard';
 
 interface ParticipantsGridSectionProps {
   participants: Participant[];
+  videoRefsMap?: Map<string, HTMLDivElement>;
 }
 
 const getDesktopGridCols = (count: number) => {
@@ -17,7 +18,7 @@ const getDesktopGridCols = (count: number) => {
 
 export const ParticipantsGridSection: React.FC<
   ParticipantsGridSectionProps
-> = ({ participants }) => {
+> = ({ participants, videoRefsMap }) => {
   const desktopCols = getDesktopGridCols(participants.length);
 
   return (
@@ -33,7 +34,17 @@ export const ParticipantsGridSection: React.FC<
       >
         {participants.map(participant => (
           <div key={participant.id} className="w-full h-full">
-            <ParticipantCard participant={participant} />
+            <ParticipantCard
+              participant={participant}
+              videoRef={el => {
+                if (el && videoRefsMap) {
+                  // Only set if not already set (preserve existing video elements)
+                  if (!videoRefsMap.has(participant.id)) {
+                    videoRefsMap.set(participant.id, el);
+                  }
+                }
+              }}
+            />
           </div>
         ))}
       </div>

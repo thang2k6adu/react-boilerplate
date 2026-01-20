@@ -63,6 +63,12 @@ export const API_ENDPOINTS = {
     STOP: (sessionId: string) => `/tracking-sessions/${sessionId}/stop`,
     PROGRESS: '/tracking-sessions/progress',
   },
+  ROOMS: {
+    PUBLIC: '/rooms/public',
+    JOIN: (roomId: string) => `/rooms/${roomId}/join`,
+    DETAIL: (roomId: string) => `/rooms/${roomId}`,
+    LEAVE: (roomId: string) => `/rooms/${roomId}/leave`,
+  },
 } as const;
 
 export const TOKEN_STORAGE_KEYS = {

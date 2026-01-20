@@ -16,6 +16,7 @@ import themeReducer from './slices/themeSlice';
 import taskReducer from './slices/taskSlice';
 import matchmakingReducer from './slices/matchmakingSlice';
 import trackingSessionReducer from './slices/trackingSessionSlice';
+import roomReducer from './slices/roomSlice';
 
 const persistConfig = {
   key: 'root',
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   task: taskReducer,
   matchmaking: matchmakingReducer,
   trackingSession: trackingSessionReducer,
+  room: roomReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -40,7 +40,7 @@ export const routes: RouteConfig[] = [
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <SignUp /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
-
+      { path: 'focus-room', element: <FocusRoomV2 /> },
       {
         element: <ProtectedRoute />,
         children: [
@@ -50,7 +50,6 @@ export const routes: RouteConfig[] = [
               { index: true, element: <DashboardV2 /> },
               { path: 'tasks', element: <TaskV2 /> },
               { path: 'focus', element: <FocusV2 /> },
-              { path: 'focus-room', element: <FocusRoomV2 /> },
             ],
           },
         ],

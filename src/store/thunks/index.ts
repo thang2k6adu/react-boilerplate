@@ -25,3 +25,10 @@ export {
   completeTaskThunk,
   deleteTaskThunk,
 } from './taskThunks';
+
+export {
+  fetchPublicRoomsThunk,
+  joinRoomThunk,
+  fetchRoomDetailThunk,
+  leaveRoomThunk,
+} from './roomThunks';
