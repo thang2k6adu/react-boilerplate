@@ -38,10 +38,8 @@ export const ParticipantsGridSection: React.FC<
               participant={participant}
               videoRef={el => {
                 if (el && videoRefsMap) {
-                  // Only set if not already set (preserve existing video elements)
-                  if (!videoRefsMap.has(participant.id)) {
-                    videoRefsMap.set(participant.id, el);
-                  }
+                  // Always update the ref for this participant (force re-attach)
+                  videoRefsMap.set(participant.id, el);
                 }
               }}
             />

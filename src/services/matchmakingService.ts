@@ -40,14 +40,12 @@ class MatchmakingService {
         reconnectionAttempts: 5,
       });
 
-      // Set connection timeout
       const connectionTimeout = setTimeout(() => {
         if (this.socket && !this.socket.connected) {
           this.socket.close();
           reject(new Error('Connection timeout'));
         }
-      }, 10000); // 10 second timeout
-
+      }, 10000);
       this.socket.on('connect', () => {
         clearTimeout(connectionTimeout);
         console.log('[MatchmakingService] WebSocket connected');
@@ -69,7 +67,6 @@ class MatchmakingService {
         this.emit('error', error);
       });
 
-      // Đăng ký các events từ server
       this.socket.on('match_found', (data: unknown) => {
         console.log('[MatchmakingService] Match found:', data);
         this.emit('match_found', data);
@@ -102,9 +99,6 @@ class MatchmakingService {
     });
   }
 
-  /**
-   * Ngắt kết nối WebSocket
-   */
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
@@ -113,16 +107,10 @@ class MatchmakingService {
     }
   }
 
-  /**
-   * Kiểm tra trạng thái kết nối
-   */
   isConnected(): boolean {
     return this.socket?.connected || false;
   }
 
-  /**
-   * Đăng ký event handler
-   */
   on(event: string, handler: (data: unknown) => void): void {
     if (!this.eventHandlers.has(event)) {
       this.eventHandlers.set(event, []);
@@ -133,9 +121,6 @@ class MatchmakingService {
     }
   }
 
-  /**
-   * Hủy đăng ký event handler
-   */
   off(event: string, handler: (data: unknown) => void): void {
     const handlers = this.eventHandlers.get(event);
     if (handlers) {
@@ -146,9 +131,6 @@ class MatchmakingService {
     }
   }
 
-  /**
-   * Emit event tới các handlers đã đăng ký
-   */
   private emit(event: string, data: unknown): void {
     const handlers = this.eventHandlers.get(event);
     if (handlers) {
@@ -156,18 +138,12 @@ class MatchmakingService {
     }
   }
 
-  /**
-   * Join matchmaking queue
-   */
   async joinMatchmaking(): Promise<JoinMatchmakingResponse> {
     const response =
       await apiClient.post<JoinMatchmakingResponse>('/matchmaking/join');
     return response.data;
   }
 
-  /**
-   * Cancel matchmaking (remove khỏi queue)
-   */
   async cancelMatchmaking(): Promise<CancelMatchmakingResponse> {
     const response = await apiClient.post<CancelMatchmakingResponse>(
       '/matchmaking/cancel'
@@ -175,9 +151,6 @@ class MatchmakingService {
     return response.data;
   }
 
-  /**
-   * Lấy trạng thái matchmaking hiện tại
-   */
   async getStatus(): Promise<GetStatusResponse> {
     const response = await apiClient.get<GetStatusResponse>(
       '/matchmaking/status'
@@ -185,18 +158,12 @@ class MatchmakingService {
     return response.data;
   }
 
-  /**
-   * Lấy thống kê hệ thống matchmaking
-   */
   async getStats(): Promise<GetStatsResponse> {
     const response =
       await apiClient.get<GetStatsResponse>('/matchmaking/stats');
     return response.data;
   }
 
-  /**
-   * Join vào room sau khi match
-   */
   joinRoom(roomId: string): void {
     if (!this.socket) {
       throw new Error('WebSocket not connected');
@@ -204,9 +171,6 @@ class MatchmakingService {
     this.socket.emit('join_room', { roomId });
   }
 
-  /**
-   * Leave room hiện tại
-   */
   leaveRoom(): void {
     if (!this.socket) {
       throw new Error('WebSocket not connected');
@@ -214,9 +178,6 @@ class MatchmakingService {
     this.socket.emit('leave_room');
   }
 
-  /**
-   * Leave room và update database
-   */
   async leaveRoomAPI(roomId: string): Promise<void> {
     await apiClient.post(`/rooms/${roomId}/leave`);
   }

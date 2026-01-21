@@ -27,9 +27,6 @@ export const useMatchmaking = () => {
   const dispatch = useDispatch<AppDispatch>();
   const matchmaking = useSelector((state: RootState) => state.matchmaking);
 
-  /**
-   * Kết nối WebSocket
-   */
   const connect = useCallback(async () => {
     if (matchmaking.isConnected || matchmaking.isConnecting) {
       return;
@@ -40,27 +37,19 @@ export const useMatchmaking = () => {
     try {
       await matchmakingService.connect();
       dispatch(setConnected(true));
-      toast.success('Connected to matchmaking server');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to connect to server';
       dispatch(setConnectionError(errorMessage));
-      toast.error(errorMessage);
     }
   }, [dispatch, matchmaking.isConnected, matchmaking.isConnecting]);
 
-  /**
-   * Ngắt kết nối WebSocket
-   */
   const disconnect = useCallback(() => {
     matchmakingService.disconnect();
     dispatch(setConnected(false));
     dispatch(reset());
   }, [dispatch]);
 
-  /**
-   * Join matchmaking queue
-   */
   const joinMatchmaking = useCallback(async () => {
     if (!matchmaking.isConnected) {
       toast.error('Please connect to server first');
@@ -76,11 +65,9 @@ export const useMatchmaking = () => {
         dispatch(joinSuccess());
         toast.success('Waiting for opponent...');
       } else if (response.data.status === 'MATCHED') {
-        // Match ngay lập tức
         if (response.data.matchData) {
           dispatch(setMatchData(response.data.matchData));
           toast.success('Match found!');
-          // Auto join room
           matchmakingService.joinRoom(response.data.matchData.roomId);
         }
       }
@@ -95,9 +82,6 @@ export const useMatchmaking = () => {
     }
   }, [dispatch, matchmaking.isConnected]);
 
-  /**
-   * Cancel matchmaking
-   */
   const cancelMatchmaking = useCallback(async () => {
     dispatch(setCanceling(true));
 
@@ -116,9 +100,6 @@ export const useMatchmaking = () => {
     }
   }, [dispatch]);
 
-  /**
-   * Leave room hiện tại
-   */
   const leaveRoom = useCallback(() => {
     try {
       matchmakingService.leaveRoom();
@@ -133,22 +114,16 @@ export const useMatchmaking = () => {
     }
   }, [dispatch]);
 
-  /**
-   * Clear error
-   */
   const clearErrorMessage = useCallback(() => {
     dispatch(clearError());
   }, [dispatch]);
 
-  /**
-   * Setup WebSocket event listeners
-   */
-  useEffect(() => {
+  // Setup event handlers - can be called manually if needed
+  const setupEventHandlers = useCallback(() => {
     const handleMatchFound = (data: unknown): void => {
       const matchEvent = data as MatchFoundEvent;
       dispatch(setMatchData(matchEvent));
       toast.success(`Match found! Opponent: ${matchEvent.opponentName}`);
-      // Auto join room
       matchmakingService.joinRoom(matchEvent.roomId);
     };
 
@@ -187,38 +162,28 @@ export const useMatchmaking = () => {
       }
     };
 
-    // Đăng ký event listeners
     matchmakingService.on('match_found', handleMatchFound);
     matchmakingService.on('room_joined', handleRoomJoined);
     matchmakingService.on('opponent_disconnected', handleOpponentDisconnected);
     matchmakingService.on('opponent_left', handleOpponentLeft);
     matchmakingService.on('disconnect', handleDisconnect);
     matchmakingService.on('error', handleError);
-
-    // Cleanup khi unmount
-    return () => {
-      matchmakingService.off('match_found', handleMatchFound);
-      matchmakingService.off('room_joined', handleRoomJoined);
-      matchmakingService.off(
-        'opponent_disconnected',
-        handleOpponentDisconnected
-      );
-      matchmakingService.off('opponent_left', handleOpponentLeft);
-      matchmakingService.off('disconnect', handleDisconnect);
-      matchmakingService.off('error', handleError);
-    };
   }, [dispatch]);
 
+  useEffect(() => {
+    // Auto setup event handlers
+    setupEventHandlers();
+  }, [setupEventHandlers]);
+
   return {
-    // State
     ...matchmaking,
 
-    // Actions
     connect,
     disconnect,
     joinMatchmaking,
     cancelMatchmaking,
     leaveRoom,
     clearError: clearErrorMessage,
+    setupEventHandlers,
   };
 };

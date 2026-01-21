@@ -1,7 +1,34 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useMatchmaking } from '@/hooks/useMatchmaking';
+import { UserState } from '@/types/matchmaking';
+import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export function WelcomeBanner() {
+  const { joinMatchmaking, state, isConnected, isJoining, connect } =
+    useMatchmaking();
+
+  const handleMatchNow = async () => {
+    // If not connected, connect first
+    if (!isConnected) {
+      toast.loading('Connecting to server...', { id: 'connecting' });
+      try {
+        await connect();
+        toast.success('Connected!', { id: 'connecting' });
+      } catch {
+        toast.error('Failed to connect. Please try again.', {
+          id: 'connecting',
+        });
+        return;
+      }
+    }
+
+    joinMatchmaking();
+  };
+
+  const isMatching = state === UserState.WAITING || isJoining;
+
   return (
     <Card className="w-full rounded-md shadow-md bg-card">
       <CardContent className="p-6">
@@ -22,10 +49,20 @@ export function WelcomeBanner() {
                 </p>
               </div>
             </div>
-            <Button asChild>
-              <button className="inline-block w-fit h-fit px-4 py-3 !text-caption-lg-regular text-white">
-                Match Now!
-              </button>
+            <Button
+              type="button"
+              className="inline-block w-fit h-fit px-4 py-3 !text-caption-lg-regular text-white disabled:opacity-50"
+              onClick={handleMatchNow}
+              disabled={isMatching}
+            >
+              {isMatching ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin inline-block" />
+                  Matching...
+                </>
+              ) : (
+                'Match Now!'
+              )}
             </Button>
           </div>
 

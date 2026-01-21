@@ -17,6 +17,7 @@ interface VideoRoomProps {
   livekitUrl: string;
   token: string;
   onDisconnect?: () => void;
+  initialVideoOff?: boolean; // Default camera state
 }
 
 type ConnectionStatus =
@@ -31,6 +32,7 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
   livekitUrl,
   token,
   onDisconnect,
+  initialVideoOff = false,
 }) => {
   const [status, setStatus] = useState<ConnectionStatus>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -60,39 +62,37 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
   const updateParticipants = useCallback(() => {
     if (!room || !isMountedRef.current) return;
 
-    setParticipants(prevParticipants => {
+    setParticipants(() => {
       const newParticipants: Participant[] = [];
       const localParticipant = room.localParticipant;
       const localId = localParticipant.identity || 'local';
 
-      // Find existing local participant to preserve isVideoOff state
-      const existingLocal = prevParticipants.find(p => p.id === localId);
-
+      // Always use actual camera track mute state for local participant
+      const camPub = localParticipant.getTrackPublication(Track.Source.Camera);
+      const isLocalVideoMuted = camPub ? camPub.isMuted : true;
       newParticipants.push({
         id: localId,
         name: localParticipant.identity || 'You',
         avatar: `https://i.pravatar.cc/150?u=${localParticipant.identity}`,
-        isMuted:
-          existingLocal?.isMuted ?? !localParticipant.isMicrophoneEnabled,
-        isVideoOff:
-          existingLocal?.isVideoOff ?? !localParticipant.isCameraEnabled,
+        isMuted: !localParticipant.isMicrophoneEnabled,
+        isVideoOff: isLocalVideoMuted,
         isActive: true,
         taskTitle: 'Working...',
         progress: 0,
       });
 
       room.remoteParticipants.forEach(participant => {
-        // Find existing participant to preserve isVideoOff state
-        const existing = prevParticipants.find(
-          p => p.id === participant.identity
-        );
+        // Check if participant has active video track
+        const hasActiveVideo = Array.from(
+          participant.videoTrackPublications.values()
+        ).some(pub => pub.track && pub.isSubscribed && !pub.isMuted);
 
         newParticipants.push({
           id: participant.identity,
           name: participant.identity || 'Guest',
           avatar: `https://i.pravatar.cc/150?u=${participant.identity}`,
-          isMuted: existing?.isMuted ?? true,
-          isVideoOff: existing?.isVideoOff ?? true, // Preserve state or default to off
+          isMuted: true,
+          isVideoOff: !hasActiveVideo, // ✅ Set based on actual track state
           isActive: true,
           taskTitle: 'Working...',
           progress: 0,
@@ -163,6 +163,7 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
     }
   }, [room, attachVideoToParticipant]);
 
+  // Attach video immediately when trackSubscribed event fires
   const handleTrackSubscribed = useCallback(
     (
       track: RemoteTrack,
@@ -177,38 +178,9 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
         publicationTrackSid: pub.trackSid,
       });
 
-      if (track.kind === Track.Kind.Video || track.kind === Track.Kind.Audio) {
+      if (track.kind === Track.Kind.Video) {
         const element = track.attach();
-        console.log(
-          '[VideoRoom] Attaching track to participant identity:',
-          participant.identity
-        );
         attachVideoToParticipant(participant.identity, pub.trackSid, element);
-
-        // Set initial video state when first track subscribed
-        if (track.kind === Track.Kind.Video) {
-          setParticipants(prev => {
-            const exists = prev.find(p => p.id === participant.identity);
-            if (exists) {
-              // Participant already exists, preserve state
-              return prev;
-            }
-            // New participant - add with default state
-            return [
-              ...prev,
-              {
-                id: participant.identity,
-                name: participant.identity || 'Guest',
-                avatar: `https://i.pravatar.cc/150?u=${participant.identity}`,
-                isMuted: true,
-                isVideoOff: pub.isMuted, // Use publication mute state
-                isActive: true,
-                taskTitle: 'Working...',
-                progress: 0,
-              },
-            ];
-          });
-        }
       }
     },
     [attachVideoToParticipant]
@@ -286,9 +258,25 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
       setError(null);
     }
   }, []);
+  // Attach all video tracks for a participant when they connect
+  // Attach all video tracks for a participant when they connect
   const handleParticipantConnected = useCallback(
-    (_p: LiveKitParticipant) => updateParticipants(),
-    [updateParticipants]
+    (participant: LiveKitParticipant) => {
+      if (participant && participant.videoTrackPublications) {
+        participant.videoTrackPublications.forEach(pub => {
+          if (pub.track && pub.isSubscribed && !pub.isMuted) {
+            const element = pub.track.attach();
+            attachVideoToParticipant(
+              participant.identity,
+              pub.trackSid,
+              element
+            );
+          }
+        });
+      }
+      updateParticipants();
+    },
+    [attachVideoToParticipant, updateParticipants]
   );
   const handleParticipantDisconnected = useCallback(
     (_p: LiveKitParticipant) => updateParticipants(),
@@ -341,8 +329,9 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
     if (!isMountedRef.current) return;
 
     // Skip if already connected or connecting
-    if (status === 'connected' || status === 'connecting') {
-      console.log('[VideoRoom] Skipping connect - already', status);
+    const currentStatus = status;
+    if (currentStatus === 'connected' || currentStatus === 'connecting') {
+      console.log('[VideoRoom] Skipping connect - already', currentStatus);
       return;
     }
 
@@ -368,21 +357,85 @@ export const VideoRoom: React.FC<VideoRoomProps> = ({
       if (!hasCamera || !hasMic) {
         await room.localParticipant.enableCameraAndMicrophone();
         console.log('[VideoRoom] Camera and microphone enabled');
+
+        // Disable camera if initialVideoOff is true
+        if (initialVideoOff) {
+          const cameraTrack = room.localParticipant.getTrackPublication(
+            Track.Source.Camera
+          );
+          if (cameraTrack?.track) {
+            await cameraTrack.track.mute();
+            console.log('[VideoRoom] Camera disabled (initialVideoOff)');
+          }
+        }
       } else {
         console.log(
           '[VideoRoom] Tracks already published, skipping enableCameraAndMicrophone'
         );
+
+        // Also handle initialVideoOff for already published tracks
+        if (initialVideoOff) {
+          const cameraTrack = room.localParticipant.getTrackPublication(
+            Track.Source.Camera
+          );
+          if (cameraTrack?.track && !cameraTrack.isMuted) {
+            await cameraTrack.track.mute();
+            console.log(
+              '[VideoRoom] Camera disabled (initialVideoOff) for existing track'
+            );
+          }
+        }
       }
 
       updateParticipants();
       setTimeout(() => renderLocalVideo(), 100);
+
+      // 🔥 FIX: Attach existing remote tracks (already published before we joined)
+      console.log('[VideoRoom] Attaching existing remote tracks...');
+      room.remoteParticipants.forEach(participant => {
+        participant.videoTrackPublications.forEach(pub => {
+          if (pub.track && pub.isSubscribed && !pub.isMuted) {
+            console.log(
+              '[VideoRoom] Attaching existing video track from:',
+              participant.identity
+            );
+            const element = pub.track.attach();
+            attachVideoToParticipant(
+              participant.identity,
+              pub.trackSid,
+              element
+            );
+          }
+        });
+
+        participant.audioTrackPublications.forEach(pub => {
+          if (pub.track && pub.isSubscribed && !pub.isMuted) {
+            console.log(
+              '[VideoRoom] Attaching existing audio track from:',
+              participant.identity
+            );
+            const audioElement = pub.track.attach();
+            audioElement.setAttribute('data-participant', participant.identity);
+            audioElement.setAttribute('data-track-sid', pub.trackSid);
+            trackElementsMap.current.set(pub.trackSid, audioElement);
+            document.body.appendChild(audioElement);
+          }
+        });
+      });
     } catch (err: unknown) {
       if (isMountedRef.current) {
         setError(err instanceof Error ? err.message : 'Failed to connect');
         setStatus('error');
       }
     }
-  }, [room, renderLocalVideo, updateParticipants, status]);
+  }, [
+    room,
+    renderLocalVideo,
+    updateParticipants,
+    initialVideoOff,
+    attachVideoToParticipant,
+    status,
+  ]);
 
   useEffect(() => {
     console.log('[VideoRoom] Component mounted');

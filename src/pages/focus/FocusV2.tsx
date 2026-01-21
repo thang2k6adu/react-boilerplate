@@ -4,18 +4,35 @@ import { FilterSidebar } from './sections/FilterSidebar';
 import { WelcomeBanner } from './sections/WelcomeBanner';
 import { RoomsGrid } from './sections/RoomsGrid';
 import { useRooms } from '@/hooks/useRooms';
+import { useMatchmaking } from '@/hooks/useMatchmaking';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import MatchingBanner from '@/components/MatchingBanner';
 import { Room } from './types';
 import { Helmet } from 'react-helmet-async';
 import { getNatureImage } from '@/utils/images';
+import { UserState } from '@/types/matchmaking';
+import { ROUTES } from '@/constants';
 
 export default function FocusV2() {
   const navigate = useNavigate();
   const { publicRooms, isLoading, fetchPublicRooms, joinRoom } = useRooms();
+  const { matchData, state, clearError } = useMatchmaking();
 
   useEffect(() => {
     fetchPublicRooms();
   }, [fetchPublicRooms]);
+
+  // Redirect to room when matched
+  useEffect(() => {
+    if (matchData && state === UserState.IN_ROOM) {
+      const roomId = matchData.roomId;
+
+      if (roomId) {
+        clearError();
+        navigate(`${ROUTES.V2.FOCUS_ROOM}/${roomId}`);
+      }
+    }
+  }, [matchData, state, navigate, clearError]);
 
   // Transform API data to UI format
   const rooms: Room[] = useMemo(() => {
@@ -39,8 +56,8 @@ export default function FocusV2() {
     const result = await joinRoom(roomId);
     // Check if join was successful (thunk returns fulfilled result with payload)
     if (result.meta.requestStatus === 'fulfilled' && result.payload) {
-      // Navigate to focus room page with roomId
-      navigate('/v2/focus-room', { state: { roomId } });
+      // Navigate to focus room page with roomId in URL
+      navigate(`/v2/focus-room/${roomId}`);
     }
   };
 
@@ -57,6 +74,8 @@ export default function FocusV2() {
           content="Join study rooms and focus together"
         />
       </Helmet>
+
+      <MatchingBanner />
 
       <div className="col-span-3 bg-white rounded-lg border p-4 mb-6 shadow-md">
         <FilterSidebar />

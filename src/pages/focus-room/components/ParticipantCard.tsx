@@ -8,16 +8,16 @@ interface ParticipantCardProps {
 
 export const ParticipantCard: React.FC<ParticipantCardProps> = React.memo(
   ({ participant, videoRef }) => {
-    const videoOff = participant.isVideoOff;
-
+    // Show avatar/overlay only if no video track or track is muted
+    // (isVideoOff is now always synced to actual track mute state)
     return (
       <div className="relative w-full h-full aspect-video bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition">
         {/* Video container - always render for LiveKit to attach */}
-        <div ref={videoRef} className="absolute inset-0 w-full h-full" />
+        <div ref={videoRef} className="absolute inset-0 w-full h-full z-10" />
 
-        {/* Show avatar only when video is off */}
-        {videoOff && (
-          <div className="absolute inset-0 bg-gray-800 flex items-center justify-center z-10">
+        {/* Show avatar only when video is off (no track or muted) */}
+        {participant.isVideoOff && (
+          <div className="absolute inset-0 bg-gray-800 flex items-center justify-center z-0">
             <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
               {participant.avatar ? (
                 <img
@@ -34,7 +34,7 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = React.memo(
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-black/0 z-10">
+        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-black/0 z-20">
           <div className="text-xs font-medium text-white truncate">
             {participant.name}
           </div>
