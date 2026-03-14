@@ -15,26 +15,30 @@ const NotFound = React.lazy(() => import('@/pages/NotFound'));
 export const routes: RouteObject[] = [
   {
     path: '/',
+    element: <Layout />,
     children: [
       { index: true, element: <Home /> },
       { path: 'about', element: <About /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <SignUp /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
-      { path: '*', element: <NotFound /> },
-    ],
-  },
-  {
-    path: '/dashboard',
-    element: <ProtectedRoute />,
-    children: [
       {
-        element: <Layout />,
-        children: [
-          { index: true, element: <Dashboard /> },
-          { path: 'settings', element: <Settings /> },
-        ],
+        path: 'dashboard',
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
+      {
+        path: 'settings',
+        element: (
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        ),
+      },
+      { path: '*', element: <NotFound /> },
     ],
   },
 ];
