@@ -13,10 +13,6 @@ import storage from 'redux-persist/lib/storage';
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
-import taskReducer from './slices/taskSlice';
-import matchmakingReducer from './slices/matchmakingSlice';
-import trackingSessionReducer from './slices/trackingSessionSlice';
-import roomReducer from './slices/roomSlice';
 
 const persistConfig = {
   key: 'root',
@@ -28,10 +24,6 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   theme: themeReducer,
-  task: taskReducer,
-  matchmaking: matchmakingReducer,
-  trackingSession: trackingSessionReducer,
-  room: roomReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -55,7 +55,7 @@ const SignUp: React.FC = () => {
         })
       ).unwrap();
       toast.success('Account created successfully!');
-      navigate(ROUTES.V2.DASHBOARD);
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
       const errorMessage = typeof err === 'string' ? err : 'Sign up failed';
       setFirebaseError(errorMessage);

@@ -1,14 +1,5 @@
 import * as React from 'react';
-import {
-  Heart,
-  Home,
-  Focus,
-  List,
-  MessageCircle,
-  Calendar,
-  Settings,
-  User,
-} from 'lucide-react';
+import { Heart, Home, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -16,25 +7,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export default function CollapsibleSidebar() {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
 
-  const mainNavItems = [
-    { icon: Home, label: 'Home', path: '/v2' },
-    { icon: Focus, label: 'Focus', path: '/v2/focus' },
-    { icon: List, label: 'Tasks', path: '/v2/tasks' },
-    { icon: MessageCircle, label: 'Chat', path: '/v2/chat' },
-    { icon: Calendar, label: 'Schedule', path: '/v2/schedule' },
-  ];
+  const mainNavItems = [{ icon: Home, label: 'Dashboard', path: '/dashboard' }];
 
   const bottomNavItems = [
-    { icon: Settings, label: 'Settings', path: '/v2/settings' },
-    { icon: User, label: 'User', path: '/v2/profile' },
+    { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
   ];
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const isActive = (path: string) => {
-    if (path === '/v2') {
-      return location.pathname === '/v2';
+    if (path === '/dashboard') {
+      return location.pathname === '/dashboard';
     }
     return (
       location.pathname === path || location.pathname.startsWith(path + '/')

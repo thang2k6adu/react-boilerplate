@@ -7,20 +7,6 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
 
   DASHBOARD: '/dashboard',
-  TASKS: '/tasks',
-  MATCHMAKING: '/matchmaking',
-
-  V2: {
-    HOME: '/v2',
-    LOGIN: '/v2/login',
-    SIGNUP: '/v2/signup',
-    FORGOT_PASSWORD: '/v2/forgot-password',
-
-    DASHBOARD: '/v2',
-    TASKS: '/v2/tasks',
-    FOCUS: '/v2/focus',
-    FOCUS_ROOM: '/v2/focus-room',
-  },
 } as const;
 
 export const USER_ROLES = {
@@ -39,35 +25,6 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: '/auth/reset-password',
     FIREBASE_LOGIN: '/auth/firebase/login',
     FIREBASE_REFRESH: '/auth/refresh',
-  },
-  TASKS: {
-    LIST: '/tasks',
-    CREATE: '/tasks',
-    DETAIL: (id: string) => `/tasks/${id}`,
-    UPDATE: (id: string) => `/tasks/${id}`,
-    DELETE: (id: string) => `/tasks/${id}`,
-    ACTIVATE: (id: string) => `/tasks/${id}/activate`,
-    COMPLETE: (id: string) => `/tasks/${id}/complete`,
-    ACTIVE: '/tasks/active',
-  },
-  MATCHMAKING: {
-    JOIN: '/matchmaking/join',
-    CANCEL: '/matchmaking/cancel',
-    STATUS: '/matchmaking/status',
-    STATS: '/matchmaking/stats',
-  },
-  TRACKING_SESSIONS: {
-    ACTIVATE: (taskId: string) => `/tasks/${taskId}/activate`,
-    PAUSE: (sessionId: string) => `/tracking-sessions/${sessionId}/pause`,
-    RESUME: (sessionId: string) => `/tracking-sessions/${sessionId}/resume`,
-    STOP: (sessionId: string) => `/tracking-sessions/${sessionId}/stop`,
-    PROGRESS: '/tracking-sessions/progress',
-  },
-  ROOMS: {
-    PUBLIC: '/rooms/public',
-    JOIN: (roomId: string) => `/rooms/${roomId}/join`,
-    DETAIL: (roomId: string) => `/rooms/${roomId}`,
-    LEAVE: (roomId: string) => `/rooms/${roomId}/leave`,
   },
 } as const;
 

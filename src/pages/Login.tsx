@@ -52,7 +52,7 @@ const Login: React.FC = () => {
       ).unwrap();
       console.log('✅ Login successful:', result);
       toast.success('Login successful!');
-      navigate(ROUTES.V2.HOME);
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
       console.error('❌ Login failed:', err);
       const errorMessage = typeof err === 'string' ? err : 'Login failed';
